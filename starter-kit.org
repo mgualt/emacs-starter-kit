@@ -456,35 +456,35 @@ Located in [[file:starter-kit-eshell.org][starter-kit-eshell]]
 *** Starter kit lisp
 Located in [[file:starter-kit-lisp.org][starter-kit-lisp]]
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 (starter-kit-load "starter-kit-lisp.org")
 #+end_src
 
 *** Starter kit Haskell
 Located in [[file:starter-kit-haskell.org][starter-kit-haskell]]
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 (starter-kit-load "starter-kit-haskell.org")
 #+end_src
 
 *** Starter kit ruby
 Located in [[file:starter-kit-ruby.org][starter-kit-ruby]]
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 (starter-kit-load "starter-kit-ruby.org")
 #+end_src
 
 *** Starter kit JS
 Located in [[file:starter-kit-js.org][starter-kit-js]]
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 (starter-kit-load "starter-kit-js.org")
 #+end_src
 
 *** Starter Kit Perl
 Located in [[file:starter-kit-perl.org][starter-kit-perl]]
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 (starter-kit-load "starter-kit-perl.org")
 #+end_src
 
@@ -505,14 +505,14 @@ Located in [[file:starter-kit-latex.org][starter-kit-latex]]
 *** Starter Kit Stats
 Located in [[file:starter-kit-stats.org][starter-kit-stats]]
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (starter-kit-load "starter-kit-stats.org")
 #+end_src
 
 *** Starter Kit Text
 Located in [[file:starter-kit-text.org][starter-kit-text]]
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (starter-kit-load "starter-kit-text.org")
 #+end_src
 

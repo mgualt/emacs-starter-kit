@@ -34,7 +34,7 @@ Finally, the [[*Local%20Org-mode%20XeLaTeX%20Export%20Settings][Local Org-mode X
 Emacs doesn't seem to see the system path which is set in .bash_profile, 
 so we have to set the path here.
 #+srcname: path-settings
-#+begin_src emacs-lisp 
+#+begin_src emacs-lisp :tangle no
   (setenv "PATH" (concat "/usr/local/bin:/usr/texbin:" (getenv "PATH")))
 #+end_src
 
@@ -570,7 +570,7 @@ Create =html= files form the =org= sources, to help with documentation. To set u
 ** IRC
 Sometimes useful for getting help on R or Emacs. 
 #+source: rirc-configuration
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   ;; connect to irc on invocation but don't autojoin any channels
   (require 'rcirc)
   (add-to-list 'rcirc-server-alist
