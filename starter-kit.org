@@ -419,10 +419,9 @@ turn off these sections if you don't plan on using the related mode or
 language.
 
 *** Starter kit yasnippet
-[[http://code.google.com/p/yasnippet/][yasnippet]] is yet another snippet expansion system for Emacs.  It is
+[[https://github.com/capitaomorte/yasnippet][yasnippet]] is yet another snippet expansion system for Emacs.  It is
 inspired by TextMate's templating syntax.
-- watch the [[http://www.youtube.com/watch?v=vOj7btx3ATg][video on YouTube]]
-- see the [[http://yasnippet.googlecode.com/svn/trunk/doc/index.html][intro and tutorial]]
+- [http://capitaomorte.github.com/yasnippet/][documentation and video]] 
 
 load the yasnippet bundle
 #+begin_src emacs-lisp
