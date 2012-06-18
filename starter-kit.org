@@ -421,7 +421,7 @@ language.
 *** Starter kit yasnippet
 [[https://github.com/capitaomorte/yasnippet][yasnippet]] is yet another snippet expansion system for Emacs.  It is
 inspired by TextMate's templating syntax.
-- [http://capitaomorte.github.com/yasnippet/][documentation and video]] 
+- [[http://capitaomorte.github.com/yasnippet/][documentation and video]] 
 
 load the yasnippet bundle
 #+begin_src emacs-lisp
