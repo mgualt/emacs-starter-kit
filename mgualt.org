@@ -534,7 +534,15 @@ Create =html= files form the =org= sources, to help with documentation. To set u
   
     (setq org-export-html-style-extra "") 
     (setq org-export-html-postamble nil)
-  
+
+#+end_src
+
+*** Cosmetic Settings
+Startup using [[http://orgmode.org/manual/Clean-view.html][org-indent-mode]].
+
+#+source: org-indent-mode
+#+begin_src emacs-lisp
+  (setq org-startup-indented t)
 #+end_src
 
 ** Auto-complete mode
