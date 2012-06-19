@@ -1,7 +1,7 @@
 #+TITLE: Local User Customizations
 #+OPTIONS: toc:nil num:nil ^:nil
 
-* Starter Kit kjhealy
+* Starter Kit mgualt
 This file contains very local customizations---ones that in some cases
 you will not be able to just drop in and use because, e.g., they
 involve references to particular files on my own machine. It's
@@ -73,7 +73,7 @@ as turning off the sans-serif heading style that AucTeX defaults to.
 Require maxframe package to conveniently maxmimize the window. Doesn't work with Emacs 23 on Mac.
 
 #+srcname: fullscreen-1
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
   (require 'maxframe)
   (global-set-key (kbd "C-c m") 'x-maximize-frame)  
 #+end_src
@@ -108,7 +108,7 @@ For use with Yamamoto Mitsuharu's Carbon-patched Emacs 23. (This is
     what I use, but it requires you compile a custom Emacs.)
 
 #+source: fullscreen-4
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
     (defun fullscreen (&optional f)
       (interactive)
       (set-frame-parameter f 'fullscreen
@@ -146,6 +146,21 @@ Internal to emacs; also seems not to work on OS X.
             (setq mac-option-modifier 'meta)
             (setq mac-option-modifier nil)
             )))
+#+end_src
+*** Frame position
+Set the position of the frame and define function arrange-frame  
+#+srcname: arrange-frame
+#+begin_src emacs-lisp 
+(defun arrange-frame (w h x y &optional nosplit)
+  "Set the width, height, and x/y position of the current frame with split unless you say"
+  (let ((frame (selected-frame)))
+    (delete-other-windows)
+    (set-frame-position frame x y)
+    (set-frame-size frame w h)
+    (if (not nosplit)
+        (split-window-horizontally))))
+
+(arrange-frame 90 60 200 100 1)
 #+end_src
 
 ** Local LaTeX settings
@@ -248,7 +263,7 @@ and using easy bindings for navigation.
 #+begin_src emacs-lisp
   (add-hook 'TeX-mode-hook '(lambda () (outline-minor-mode 1)))
   (add-hook 'outline-minor-mode-hook '(lambda () (hide-body)))
-  (add-hook 'outline-minor-mode-hook '(lambda () (require 'outline-mode-easy-bindings )))
+  (add-hook 'outline-minor-mode-hook '(lambda () (require 'outline-mode-easy-bindings)))
 #+end_src
 
 *** Wrapping
