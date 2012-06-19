@@ -160,24 +160,26 @@ Internal to emacs; also seems not to work on OS X.
 
 *** SyncTeX, PDF mode, Skim
 Set up AUCTeX to work with the Skim PDF viewer.
-
+Not sure what is supposed to be commented out here. Resources from [[http://sourceforge.net/apps/mediawiki/skim-app/index.php?title=TeX_and_PDF_Synchronization#Considerations_for_Emacs][sourceforge]].
 #+srcname: local-loadpath
 #+begin_src emacs-lisp
-   ;; Synctex with Skim
-   ;;(add-hook 'TeX-mode-hook
-   ;;(lambda ()
-   ;;(add-to-list 'TeX-output-view-style
-   ;;'("^pdf$" "."
-   ;; "/Applications/Skim.app/Contents/SharedSupport/displayline %n %o %b")))
-   ;; )
+  ;; Synctex with Skim
+  ;;(add-hook 'TeX-mode-hook
+  ;;(lambda ()
+  ;;(add-to-list 'TeX-output-view-style
+  ;;'("^pdf$" "."
+  ;; "/Applications/Skim.app/Contents/SharedSupport/displayline %n %o %b")))
+  ;; )
+  
+  ;; Make emacs aware of multi-file projects
+  ;; (setq-default TeX-master nil)
 
-   ;; Make emacs aware of multi-file projects
-   ;; (setq-default TeX-master nil)
-
-   ;; Auto-raise Emacs on activation (from Skim, usually)
-   (defun raise-emacs-on-aqua()
-   (shell-command "osascript -e 'tell application \"Emacs\" to activate' &"))
-   (add-hook 'server-switch-hook 'raise-emacs-on-aqua)
+  ;; Starts the Emacs server
+  ;; (server-start)
+  ;; Auto-raise Emacs on activation (from Skim, usually)
+  (defun raise-emacs-on-aqua()
+  (shell-command "osascript -e 'tell application \"Emacs\" to activate' &"))
+  (add-hook 'server-switch-hook 'raise-emacs-on-aqua)
 #+end_src
 
 *** Local RefTeX Settings
@@ -236,7 +238,36 @@ Tell RefTeX where the bibliography files are.
                         (shell-command "vc")))
 
 #+end_src
+    
+*** Outline mode
+turning on the outline minor mode,
+opening with body hidden, 
+and using easy bindings for navigation.
 
+#+srcname: outline-minor-mode
+#+begin_src emacs-lisp
+  (add-hook 'TeX-mode-hook '(lambda () (outline-minor-mode 1)))
+  (add-hook 'outline-minor-mode-hook '(lambda () (hide-body)))
+  (add-hook 'outline-minor-mode-hook '(lambda () (require 'outline-mode-easy-bindings )))
+#+end_src
+
+*** Wrapping
+Following [[http://www.math.ntnu.no/~stacey/HowDidIDoThat/LaTeX/versioning.html][Andrew Stacey]]'s advice, turn on longlines-mode
+
+#+srcname: longlines-mode
+#+begin_src emacs-lisp
+  (add-hook 'tex-mode-hook '(lambda () (longlines-mode 1)))
+#+end_src
+
+*** Cosmetics
+Stop Auctex from using different fonts for the sections and subscripts.
+
+#+srcname: font-latex
+#+begin_src emacs-lisp
+  (setq font-latex-fontify-sectioning 'color)
+  (setq font-latex-fontify-script nil)
+#+end_src
+  
 ** Local Pandoc Support 
  Make Emacs see where pandoc is installed. (Emacs can't access the bash
  $PATH directly.)
