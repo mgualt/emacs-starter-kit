@@ -64,10 +64,10 @@ as turning off the sans-serif heading style that AucTeX defaults to.
 #+end_src
 
 *** Run Emacs in Full Screen
-  I find it very useful to run Emacs in full-screen mode. There is no
-    completely satisfactory way to accomplish this on Mac OS X. What
-    works depends on the flavor of emacs you are using,
-    unfortunately. Choose as appropriate from the following options:
+I find it very useful to run Emacs in full-screen mode. There is no
+completely satisfactory way to accomplish this on Mac OS X. What
+works depends on the flavor of emacs you are using,
+unfortunately. Choose as appropriate from the following options:
 
 **** Option 1
 Require maxframe package to conveniently maxmimize the window. Doesn't work with Emacs 23 on Mac.
@@ -87,7 +87,7 @@ patched emacs build at =git://github.com/typester/emacs.git=.
   (global-set-key (kbd "C-c m") 'ns-toggle-fullscreen)
 #+end_src
 
-**** Option 3  
+**** Option 3
 Fullscreen toggle using maxframe.el. 
 #+source: fullscreen-3
 #+begin_src emacs-lisp :tangle no
@@ -109,15 +109,15 @@ For use with Yamamoto Mitsuharu's Carbon-patched Emacs 23. (This is
 
 #+source: fullscreen-4
 #+begin_src emacs-lisp :tangle no
-    (defun fullscreen (&optional f)
-      (interactive)
-      (set-frame-parameter f 'fullscreen
-                           (if (frame-parameter f 'fullscreen) nil 'fullboth)))
-    (global-set-key (kbd "C-c f") 'fullscreen)
-    (add-hook 'after-make-frame-functions 'fullscreen)
+  (defun fullscreen (&optional f)
+    (interactive)
+    (set-frame-parameter f 'fullscreen
+                         (if (frame-parameter f 'fullscreen) nil 'fullboth)))
+  (global-set-key (kbd "C-c f") 'fullscreen)
+  (add-hook 'after-make-frame-functions 'fullscreen)
 #+end_src
 
-**** Option 5  
+**** Option 5
 Internal to emacs; also seems not to work on OS X.
 #+source: fullscreen-5
 #+begin_src emacs-lisp :tangle no
@@ -564,7 +564,7 @@ When in an org-mode buffer, bind TeX-insert-quote to =C-c "=. Turned off by defa
 Create =html= files form the =org= sources, to help with documentation. To set up org-mode for publishing projects to HTML you will need to change these settings, as they apply only to the Starter Kit. 
 
 #+source: html-export-settings
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (setq org-publish-project-alist
          '(("org"
             :base-directory "~/.emacs.d/"
@@ -664,7 +664,14 @@ Some last tweaks.
   '(text-mode-hook (quote (text-mode-hook-identify)))
   )
 #+end_src
-   
+
+** Initial Buffer
+Make the initial buffer be the main directory for all my projects.
+
+#+srcname: initial-buffer-choice
+#+begin_src emacs-lisp 
+ (setq initial-buffer-choice "~/Dropbox")
+#+end_src
    
    
    
