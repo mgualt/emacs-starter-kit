@@ -160,8 +160,10 @@ Set the position of the frame and define function arrange-frame
     (if (not nosplit)
         (split-window-horizontally))))
 
-(arrange-frame 90 60 200 100 1)
+(arrange-frame 80 42 0 0 1)
 #+end_src
+
+#+RESULTS:
 
 ** Local LaTeX settings
 *** In-text Smart Quotes (XeLaTeX only)

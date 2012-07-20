@@ -455,7 +455,7 @@ Located in [[file:starter-kit-eshell.org][starter-kit-eshell]]
 *** Starter kit lisp
 Located in [[file:starter-kit-lisp.org][starter-kit-lisp]]
 
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp 
 (starter-kit-load "starter-kit-lisp.org")
 #+end_src
 

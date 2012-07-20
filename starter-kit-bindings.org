@@ -196,6 +196,9 @@ Use a little bit of Mac keys, but not all of them.
 
 #+end_src
 
+#+RESULTS:
+: undo
+
 ** Fetch the contents at a URL, display it raw.
 #+begin_src emacs-lisp 
 (global-set-key (kbd "C-x h") 'view-url)
