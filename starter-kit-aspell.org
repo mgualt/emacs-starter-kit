@@ -12,7 +12,7 @@ flyspell doesn't start properly. Putting this customization in
 - NB: Flyspell is sometimes very slow on Emacs 23. 
 
 ** Specify aspell
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 (setq ispell-program-name "aspell"
       ispell-dictionary "english"
       ispell-dictionary-alist
