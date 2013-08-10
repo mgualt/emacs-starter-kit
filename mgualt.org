@@ -39,6 +39,9 @@ so we have to set the path here.
 (add-to-list 'exec-path '"/usr/local/bin")
 #+end_src
 
+#+RESULTS:
+| /usr/local/bin | /usr/texbin | /Users/mgualt/.rvm/gems/ruby-1.9.2-p320/bin/ | /Users/mgualt/.rvm/gems/ruby-1.9.2-p320@global/bin/ | /Users/mgualt/.rvm/rubies/ruby-1.9.2-p320/bin/ | /Users/mgualt/.rvm/bin/ | /usr/local/Cellar/gettext/0.18.1.1/include/ | /usr/gcc-4.7.1/bin/ | /usr/local/bin/ | /usr/bin/ | /bin/ | /usr/sbin/ | /sbin/ | /usr/local/bin/ | /opt/X11/bin/ | /usr/X11/bin/ | /usr/texbin/ |
+
 Is this necessary? it seems so. 
 #+srcname: path-settings-PATH
 #+begin_src emacs-lisp
@@ -49,13 +52,17 @@ Is this necessary? it seems so.
   )
 )
 #+end_src
+
+#+RESULTS:
+: /usr/local/bin:/usr/local/bin:/usr/local/bin:/usr/local/bin:/usr/local/bin:/usr/local/bin:/usr/local/bin:/usr/local/bin:/usr/local/bin:/usr/local/bin:/usr/local/bin:/usr/local/bin:/usr/local/bin:/usr/local/bin:/usr/local/bin:/usr/local/bin:/usr/local/bin:/usr/local/bin:/usr/local/bin:/usr/local/bin:/usr/local/bin:/usr/texbin:/Users/mgualt/.rvm/gems/ruby-1.9.2-p320/bin:/Users/mgualt/.rvm/gems/ruby-1.9.2-p320@global/bin:/Users/mgualt/.rvm/rubies/ruby-1.9.2-p320/bin:/Users/mgualt/.rvm/bin:/usr/local/Cellar/gettext/0.18.1.1/include:/usr/gcc-4.7.1/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/opt/X11/bin:/usr/X11/bin:/usr/texbin
+
 *** Color Theme and Line Highlighting
 The theme package is loaded in =starter-kit-misc.org=. The settings
 here adjust the height of some headings in Org and LaTeX mode, as well
 as turning off the sans-serif heading style that AucTeX defaults to.
 
 #+srcname: local-settings
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no 
   (add-hook 'latex-mode-hook 
             (lambda ()
               (set-face-attribute 'font-latex-sectioning-5-face nil :inherit nil :foreground "#b58900")
@@ -73,6 +80,8 @@ as turning off the sans-serif heading style that AucTeX defaults to.
                (set-face-attribute 'org-level-4 nil :height 1.1)
                (set-face-attribute 'org-level-5 nil :height 1.1)))
 #+end_src
+
+#+RESULTS:
 
 *** Run Emacs in Full Screen
 I find it very useful to run Emacs in full-screen mode. There is no
@@ -211,7 +220,7 @@ Not sure what is supposed to be commented out here. Resources from [[http://sour
 Tell RefTeX where the bibliography files are. 
 
 #+srcname: local-reftex
-#+begin_src emacs-lisp    
+#+begin_src emacs-lisp :tangle no    
     ;; Make RefTex able to find my local bib files
     (setq reftex-bibpath-environment-variables
     '("/Users/mgualt/Dropbox/Research/Bibliography"))
@@ -292,7 +301,9 @@ Stop Auctex from using different fonts for the sections and subscripts.
   (setq font-latex-fontify-sectioning 'color)
   (setq font-latex-fontify-script nil)
 #+end_src
-  
+
+#+RESULTS:
+
 ** Local Pandoc Support 
  Make Emacs see where pandoc is installed. (Emacs can't access the bash
  $PATH directly.)
@@ -305,37 +316,37 @@ Stop Auctex from using different fonts for the sections and subscripts.
 #+end_src
 
 ** Local iBuffer Settings
-   Manage a lot of buffers easily with C-x C-b. Already set up
-   elsewhere in the starter kit. Add local configuration here, e.g.,
-   display categories.
+Manage a lot of buffers easily with C-x C-b. Already set up
+elsewhere in the starter kit. Add local configuration here, e.g.,
+display categories.
 #+srcname: iBuffer-custom
 #+begin_src emacs-lisp 
   (setq ibuffer-saved-filter-groups
-      '(("home"
-	 ("emacs-config" (or (filename . ".emacs.d")
-			     (filename . "emacs-config")))
-	 ("Org" (or (mode . org-mode)
-		    (filename . "OrgMode")))
-	 ("Web Dev" (or (mode . html-mode)
-			(mode . css-mode)))
-	 ("Magit" (name . "\*magit"))
-	 ("ESS" (mode . ess-mode))
-         ("LaTeX" (mode . latex-mode))
-	 ("Help" (or (name . "\*Help\*")
-		     (name . "\*Apropos\*")
-		     (name . "\*info\*"))))))
-
-        (add-hook 'ibuffer-mode-hook 
-	             '(lambda ()
-	             (ibuffer-switch-to-saved-filter-groups "home")))
-       (setq ibuffer-show-empty-filter-groups nil)                     
-       (setq ibuffer-expert t)
-       (add-hook 'ibuffer-mode-hook 
-       '(lambda ()
-       (ibuffer-auto-mode 1)
-       (ibuffer-switch-to-saved-filter-groups "home")))
-#+end_src
+        '(("home"
+           ("emacs-config" (or (filename . ".emacs.d")
+                               (filename . "emacs-config")))
+           ("Org" (or (mode . org-mode)
+                      (filename . "OrgMode")))
+           ("Web Dev" (or (mode . html-mode)
+                          (mode . css-mode)))
+           ("Magit" (name . "\*magit"))
+           ("ESS" (mode . ess-mode))
+           ("LaTeX" (mode . latex-mode))
+           ("Help" (or (name . "\*Help\*")
+                       (name . "\*Apropos\*")
+                       (name . "\*info\*"))))))
+  
+  (add-hook 'ibuffer-mode-hook 
+            '(lambda ()
+               (ibuffer-switch-to-saved-filter-groups "home")))
+  (setq ibuffer-show-empty-filter-groups nil)                     
+  (setq ibuffer-expert t)
+  (add-hook 'ibuffer-mode-hook 
+            '(lambda ()
+               (ibuffer-auto-mode 1)
+               (ibuffer-switch-to-saved-filter-groups "home")))
    
+#+end_src
 ** Local Org-mode Settings
 *** Smart-quote binding
 When in an org-mode buffer, bind TeX-insert-quote to =C-c "=. Turned off by default. 
@@ -612,7 +623,7 @@ Startup using [[http://orgmode.org/manual/Clean-view.html][org-indent-mode]].
    choose from the menu of options.
 
 #+source: auto-complete
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   ;; compile it if the .el file is newer 
   (byte-recompile-directory "~/.emacs.d/src/auto-complete")
   (byte-recompile-directory "~/.emacs.d/src/auto-complete/dict/ess")
@@ -653,6 +664,16 @@ Some last tweaks.
 
 #+srcname: final-custom
 #+begin_src emacs-lisp
+  
+  ;; scroll one line at a time (less "jumpy" than defaults)
+  
+  (setq mouse-wheel-scroll-amount '(1 ((shift) . 1))) ;; one line at a time
+  (setq mouse-wheel-progressive-speed nil) ;; don't accelerate scrolling
+  (setq mouse-wheel-follow-mouse 't) ;; scroll window under mouse
+  (setq scroll-step 1) ;; keyboard scroll one line at a time
+  (setq scroll-conservatively 10000)
+  (setq auto-window-vscroll nil)
+  
   ;; Line-spacing tweak (Optimized for PragmataPro)
   (setq-default line-spacing 2)
   
@@ -661,43 +682,43 @@ Some last tweaks.
   
   ;; Add keybindings for commenting regions of text
   (global-set-key (kbd "C-c ;") 'comment-or-uncomment-region)
-  ;(global-set-key (kbd "M-'") 'comment-or-uncomment-region)
+  ;;(global-set-key (kbd "M-'") 'comment-or-uncomment-region)
   
-  ;; Base dir
+  ;; Base dir 
   (cd "~/")
   
   ;; custom variables kludge. Why can't I get these to work via setq?
   (custom-set-variables
-  ;; custom-set-variables was added by Custom.
-  ;; If you edit it by hand, you could mess it up, so be careful.
-  ;; Your init file should contain only one such instance.
-  ;; If there is more than one, they won't work right.
-  ;; '(LaTeX-XeTeX-command "xelatex -synctex=1")
-  ;; '(TeX-engine (quote xetex))
-  ;; '(TeX-view-program-list (quote (("Skim" "/Applications/Skim.app/Contents/SharedSupport/displayline %n %o %b"))))
-  ;; '(TeX-view-program-selection (quote (((output-dvi style-pstricks) "dvips and gv") (output-dvi "xdvi") (output-pdf "Skim") (output-html "xdg-open"))))
-  '(show-paren-mode t)
-  '(blink-cursor-mode nil)
-  '(text-mode-hook (quote (text-mode-hook-identify)))
-  )
+   ;; custom-set-variables was added by Custom.
+   ;; If you edit it by hand, you could mess it up, so be careful.
+   ;; Your init file should contain only one such instance.
+   ;; If there is more than one, they won't work right.
+   ;; '(LaTeX-XeTeX-command "xelatex -synctex=1")
+   ;; '(TeX-engine (quote xetex))
+   ;; '(TeX-view-program-list (quote (("Skim" "/Applications/Skim.app/Contents/SharedSupport/displayline %n %o %b"))))
+   ;; '(TeX-view-program-selection (quote (((output-dvi style-pstricks) "dvips and gv") (output-dvi "xdvi") (output-pdf "Skim") (output-html "xdg-open"))))
+   '(show-paren-mode t)
+   '(blink-cursor-mode nil)
+   '(text-mode-hook (quote (text-mode-hook-identify)))
+   )
   
   ;; make latexmk available via C-c C-c
-;; Note: SyncTeX is setup via ~/.latexmkrc (see below)
-(add-hook 'LaTeX-mode-hook (lambda ()
-  (push
-    '("latexmk" "latexmk -pdf %s" TeX-run-TeX nil t
-      :help "Run latexmk on file")
-    TeX-command-list)))
-(add-hook 'TeX-mode-hook '(lambda () (setq TeX-command-default "latexmk")))
-
-;; use Skim as default pdf viewer
-;; Skim's displayline is used for forward search (from .tex to .pdf)
-;; option -b highlights the current line; option -g opens Skim in the background  
-(setq TeX-view-program-selection '((output-pdf "PDF Viewer")))
-(setq TeX-view-program-list
-     '(("PDF Viewer" "/Applications/Skim.app/Contents/SharedSupport/displayline -b -g %n %o %b")))
-
-(server-start); start emacs in server mode so that skim can talk to it
+  ;; Note: SyncTeX is setup via ~/.latexmkrc (see below)
+  (add-hook 'LaTeX-mode-hook (lambda ()
+                               (push
+                                '("latexmk" "latexmk -pdf %s" TeX-run-TeX nil t
+                                  :help "Run latexmk on file")
+                                TeX-command-list)))
+  (add-hook 'TeX-mode-hook '(lambda () (setq TeX-command-default "latexmk")))
+  
+  ;; use Skim as default pdf viewer
+  ;; Skim's displayline is used for forward search (from .tex to .pdf)
+  ;; option -b highlights the current line; option -g opens Skim in the background  
+  (setq TeX-view-program-selection '((output-pdf "PDF Viewer")))
+  (setq TeX-view-program-list
+        '(("PDF Viewer" "/Applications/Skim.app/Contents/SharedSupport/displayline -b -g %n %o %b")))
+  
+  (server-start); start emacs in server mode so that skim can talk to it
   
 #+end_src
 

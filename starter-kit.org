@@ -239,6 +239,9 @@ This section contains all code implementing the Emacs Starter Kit.
   (setq custom-file (concat dotfiles-dir "custom.el"))
 #+end_src
 
+#+RESULTS:
+: /Users/mgualt/.emacs.d/custom.el
+
 *** Ubiquitous Packages
 
 These should be loaded on startup rather than autoloaded on demand
@@ -254,6 +257,9 @@ since they are likely to be used in every session
   (require 'recentf)
 #+end_src
 
+#+RESULTS:
+: recentf
+
 *** Function for loading/compiling starter-kit-*
 #+srcname: starter-kit-load
 #+begin_src emacs-lisp 
@@ -262,6 +268,9 @@ since they are likely to be used in every session
     (org-babel-load-file (expand-file-name file
                                            dotfiles-dir)))
 #+end_src
+
+#+RESULTS:
+| lambda | (file) | This function is to be used to load starter-kit-*.org files. | (org-babel-load-file (expand-file-name file dotfiles-dir)) |
 
 #+source: starter-kit-compile
 #+begin_src emacs-lisp
@@ -289,6 +298,9 @@ since they are likely to be used in every session
                    (mapcar (lambda (f) (expand-file-name f d)) (directory-files d))))
                (list (concat dotfiles-dir user-login-name) dotfiles-dir))))))
 #+end_src
+
+#+RESULTS:
+| lambda | (&optional arg) | Tangle and Byte compile all starter-kit files. | (interactive P) | (cl-flet ((age (file) (float-time (time-subtract (current-time) (nth 5 (or (file-attributes (file-truename file)) (file-attributes file))))))) (mapc (lambda (file) (when (string= org (file-name-extension file)) (let ((el-file (concat (file-name-sans-extension file) .el))) (when (or arg (not (and (file-exists-p el-file) (> (age file) (age el-file))))) (org-babel-tangle-file file el-file emacs-lisp) (byte-compile-file el-file))))) (apply (function append) (mapcar (lambda (d) (when (and (file-exists-p d) (file-directory-p d)) (mapcar (lambda (f) (expand-file-name f d)) (directory-files d)))) (list (concat dotfiles-dir user-login-name) dotfiles-dir))))) |
 
 *** Starter Kit aspell (Spell checking with flyspell)
 aspell workaround in [[file:starter-kit-aspell.org][starter-kit-aspell]]
@@ -342,6 +354,9 @@ ARCHIVE is the string name of the package archive.")
   (starter-kit-load "starter-kit-elpa.org")
 #+end_src
 
+#+RESULTS:
+: loaded /Users/mgualt/.emacs.d/starter-kit-elpa.el
+
 #+results: starter-kit-elpa
 : loaded starter-kit-elpa.el
 
@@ -393,12 +408,18 @@ Starter kit function definitions in [[file:starter-kit-defuns.org][starter-kit-d
 (starter-kit-load "starter-kit-defuns.org")
 #+end_src
 
+#+RESULTS:
+: loaded /Users/mgualt/.emacs.d/starter-kit-defuns.el
+
 *** Starter kit bindings
 Key Bindings in [[file:starter-kit-bindings.org][starter-kit-bindings]]
 
 #+begin_src emacs-lisp
 (starter-kit-load "starter-kit-bindings.org")
 #+end_src
+
+#+RESULTS:
+: loaded /Users/mgualt/.emacs.d/starter-kit-bindings.el
 
 *** Starter kit misc
 Miscellaneous settings in [[file:starter-kit-misc.org][starter-kit-misc]]
@@ -407,12 +428,18 @@ Miscellaneous settings in [[file:starter-kit-misc.org][starter-kit-misc]]
 (starter-kit-load "starter-kit-misc.org")
 #+end_src
 
+#+RESULTS:
+: loaded /Users/mgualt/.emacs.d/starter-kit-misc.el
+
 *** Starter kit registers
 Registers for jumping to commonly used files in [[file:starter-kit-registers.org][starter-kit-registers]]
 
 #+begin_src emacs-lisp
 (starter-kit-load "starter-kit-registers.org")
 #+end_src
+
+#+RESULTS:
+: loaded /Users/mgualt/.emacs.d/starter-kit-registers.el
 
 ** Language/Mode Specific Files
 These sections pertain to specific languages or modes.  Feel free to
@@ -422,9 +449,12 @@ language.
 *** Starter kit yasnippet
 Located in [[file:starter-kit-yasnippet.org][starter-kit-yasnippet]].
 
-#+begin_src emacs-lisp 
+#+begin_src emacs-lisp
   (starter-kit-load "starter-kit-yasnippet.org")    
 #+end_src 
+
+#+RESULTS:
+: loaded /Users/mgualt/.emacs.d/starter-kit-yasnippet.el
 
 
 *** Starter kit Org-mode
@@ -444,9 +474,10 @@ Located in [[file:starter-kit-eshell.org][starter-kit-eshell]]
 *** Starter kit lisp
 Located in [[file:starter-kit-lisp.org][starter-kit-lisp]]
 
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp 
 (starter-kit-load "starter-kit-lisp.org")
 #+end_src
+
 
 *** Starter kit Haskell
 Located in [[file:starter-kit-haskell.org][starter-kit-haskell]]
