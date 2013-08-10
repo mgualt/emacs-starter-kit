@@ -7,9 +7,35 @@ This is part of the [[file:starter-kit.org][Emacs Starter Kit]].
 
 Key Bindings.
 
-** You know, like Readline.
-#+begin_src emacs-lisp 
-(global-set-key (kbd "C-M-h") 'backward-kill-word)
+** Map fn to Hyper
+#+source: fn-to-hyper
+#+begin_src emacs-lisp
+  (setq mac-function-modifier 'hyper)
+  ;; fix page-up and page-down keys
+  
+  (defun sfp-page-down (&optional arg)
+    (interactive "^P")
+    (setq this-command 'next-line)
+    (next-line
+     (- (window-text-height)
+        next-screen-context-lines)))
+  (put 'sfp-page-down 'isearch-scroll t)
+  (put 'sfp-page-down 'CUA 'move)
+  
+  (defun sfp-page-up (&optional arg)
+    (interactive "^P")
+    (setq this-command 'previous-line)
+    (previous-line
+     (- (window-text-height)
+        next-screen-context-lines)))
+  (put 'sfp-page-up 'isearch-scroll t)
+  (put 'sfp-page-up 'CUA 'move)
+  
+  (global-set-key [(H down)] 'scroll-up)
+  (global-set-key [(H up)]   'scroll-down) 
+  (require 'scroll-lock)
+  (setq scroll-preserve-screen-position t)
+  
 #+end_src
 
 ** Align your code in a pretty way.
@@ -20,11 +46,6 @@ Key Bindings.
 ** Completion that uses many different methods to find options.
 #+begin_src emacs-lisp 
 (global-set-key (kbd "M-/") 'hippie-expand)
-#+end_src
-
-** Perform general cleanup.
-#+begin_src emacs-lisp 
-(global-set-key (kbd "C-c n") 'cleanup-buffer)
 #+end_src
 
 ** Turn on the menu bar for exploring new modes
@@ -46,10 +67,22 @@ Key Bindings.
 (global-set-key (kbd "C-M-r") 'isearch-backward)
 #+end_src
 
-** Jump to a definition in the current file. (This is awesome.)
-#+begin_src emacs-lisp 
-(global-set-key (kbd "C-x C-i") 'ido-imenu)
+** Convenience Function to search for regexps build with re-builder
+   Re-Builder (=M-x regexp-builder=) is a very convenient way to dynamically build regular expressions for searching and replacing. You enter a minibuffer that lets you type the regexp and the prospective matches to the expression you type are highlighted in the main buffer. In the re-builder minibuffer, =C-c C-w= copies the current expression to the kill-ring (clipboard) and =C-c C-q= quits. The expression is copied as a string, which is useful if you're writing lisp but it will not work if you copy it in to =C-M-%= or =query-replace-regexp=. But usually this is exactly what I want to do---take the expression I've built in re-buider and immediately use it to search and replace in a buffer. With the function below, you can do this. After you've built the expression and copied it wtih =C-c C-w=, quit re-bulder and do =M-x reb-query-replace=. 
+
+#+source: rexep-copy
+#+begin_src emacs-lisp
+  (defun reb-query-replace (to-string)
+      "Replace current RE from point with `query-replace-regexp'."
+      (interactive
+       (progn (barf-if-buffer-read-only)
+              (list (query-replace-read-to (reb-target-binding reb-regexp)
+                                           "Query replace"  t))))
+      (with-current-buffer reb-target-buffer
+        (query-replace-regexp (reb-target-binding reb-regexp) to-string)))
+
 #+end_src
+
 
 ** File finding
 #+begin_src emacs-lisp 
@@ -123,7 +156,7 @@ When windows get out of order, you can rotate them.
 
 ** Indentation help
 #+begin_src emacs-lisp 
-(global-set-key (kbd "C-x ^") 'join-line)
+(global-set-key (kbd "C-x a") 'join-line)
 #+end_src
 
 ** Mark text between parentheses (a sexp) for selection
@@ -180,8 +213,16 @@ When windows get out of order, you can rotate them.
 #+end_src
     
 ** Use Option as Meta key
+
+#+source: option-is-meta
+#+begin_src emacs-lisp 
+  (setq mac-option-modifier 'meta)    
+#+end_src
+
+** Use Command-Z as undo
 Use a little bit of Mac keys, but not all of them.
 #+source: mackeys1
+<<<<<<< HEAD
 #+begin_src emacs-lisp
 ;(require 'redo+) causes major problems 
 (setq mac-command-modifier 'alt mac-option-modifier 'meta)
@@ -194,7 +235,22 @@ Use a little bit of Mac keys, but not all of them.
 (global-set-key [(alt g)] 'isearch-repeat-forward)
 (global-set-key [(alt z)] 'undo)
 
+=======
+#+begin_src emacs-lisp 
+  (global-set-key [(meta z)] 'undo)
+  ;; (require 'redo+) 
+  ;;(global-set-key [(alt a)] 'mark-whole-buffer)
+  ;;(global-set-key [(alt v)] 'yank)
+  ;; (global-set-key [(alt c)] 'kill-ring-save)
+  ;;(global-set-key [(alt x)] 'kill-region)
+  ;;(global-set-key [(alt s)] 'save-buffer)
+  ;;(global-set-key [(alt f)] 'isearch-forward)
+  ;;(global-set-key [(alt g)] 'isearch-repeat-forward)
+  ;; (global-set-key [(alt z)] 'undo)
+    
+>>>>>>> upstream/master
 #+end_src
+
 
 ** Fetch the contents at a URL, display it raw.
 #+begin_src emacs-lisp 
@@ -230,13 +286,9 @@ Use a little bit of Mac keys, but not all of them.
     (let ((case-fold-search isearch-case-fold-search))
       (occur (if isearch-regexp isearch-string (regexp-quote isearch-string))))))
 #+end_src
-** Org-mode
-Two global binding for Org-mode (see [[file:starter-kit-org.org][starter-kit-org]])
 
-The [[http://orgmode.org/manual/Agenda-Views.html#Agenda-Views][Org-mode agenda]] is good to have close at hand
-#+begin_src emacs-lisp
-(define-key global-map "\C-ca" 'org-agenda)
-#+end_src
+** Org-mode
+A global binding for Org-mode (see [[file:starter-kit-org.org][starter-kit-org]])
 
 Org-mode supports [[http://orgmode.org/manual/Hyperlinks.html#Hyperlinks][links]], this command allows you to store links
 globally for later insertion into an Org-mode buffer.  See
@@ -265,6 +317,21 @@ Rgrep is infinitely useful in multi-file projects.
 #+begin_src emacs-lisp
   (define-key global-map "\C-x\C-r" 'rgrep)
 #+end_src
+
+** Interface with Ack
+Ack is "better than grep" and written in Perl. 
+
+#+source: ack
+#+begin_src emacs-lisp
+  (require 'ack-and-a-half)
+  ;; Create shorter aliases
+  (defalias 'ack 'ack-and-a-half)
+  (defalias 'ack-same 'ack-and-a-half-same)
+  (defalias 'ack-find-file 'ack-and-a-half-find-file)
+  (defalias 'ack-find-file-same 'ack-and-a-half-find-file-same)
+  (define-key global-map "\C-x\C-a" 'ack) 
+#+end_src
+
 
 ** Winner mode
     Remember the previous window configurations and jump back to them
@@ -356,15 +423,52 @@ Sometimes very useful (but we don't use the core cua keys.)
   
 #+end_src
 
+** Expand Region
+   Expand selected region by semantic units. Just keep pressing the key until it selects what you want.
+#+source: expand-region
+#+begin_src emacs-lisp
+    (require 'expand-region)
+    (global-set-key (kbd "C-=") 'er/expand-region)  
+#+end_src
+
+** Multiple Cursors
+   Use multiple cursors for search, replace, and text-cleaning tasks. For a demonstration, see http://emacsrocks.com/e13.html
+#+source: multiple-cursors
+#+begin_src emacs-lisp
+  (require 'multiple-cursors)
+  ;; When you have an active region that spans multiple lines, the following will add a cursor to each line:
+  (global-set-key (kbd "C-S-c C-S-c") 'mc/edit-lines)
+  
+  (global-set-key (kbd "C-S-c C-e") 'mc/edit-ends-of-lines)
+  (global-set-key (kbd "C-S-c C-a") 'mc/edit-beginnings-of-lines)
+  
+  ;; When you want to add multiple cursors not based on continuous lines, but based on keywords in the buffer, use:
+  (global-set-key (kbd "C->") 'mc/mark-next-like-this)
+  (global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
+  (global-set-key (kbd "C-c C-<") 'mc/mark-all-like-this)
+  
+  ;; Rectangular region mode
+  (global-set-key (kbd "H-SPC") 'set-rectangular-region-anchor)
+  
+  ;; Mark more like this
+  (global-set-key (kbd "H-a") 'mc/mark-all-like-this)
+  (global-set-key (kbd "H-p") 'mc/mark-previous-like-this)
+  (global-set-key (kbd "H-n") 'mc/mark-next-like-this)
+  (global-set-key (kbd "H-S-n") 'mc/mark-more-like-this-extended)
+  (global-set-key (kbd "H-S-a") 'mc/mark-all-in-region)
+#+end_src
+
+First mark the word, then add more cursors. To get out of multiple-cursors-mode, press <return> or C-g. The latter will first disable multiple regions before disabling multiple cursors. If you want to insert a newline in multiple-cursors-mode, use C-j.
+
 ** Minimal mode
    A nice clutter-free appearance with a reduced-size modeline, no
-   scroll bars, and no fringe indicators. Useful in conjunction with running Emacs full-screen. 
-
+   scroll bars, and no fringe indicators. Useful in conjunction with running Emacs full-screen.
 #+source: minimal-mode
 #+begin_src emacs-lisp
   (require 'minimal)
   (global-set-key (kbd "C-c s") 'minimal-mode)
 #+end_src
+
 ** Closing
 #+begin_src emacs-lisp 
 (provide 'starter-kit-bindings)

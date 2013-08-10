@@ -14,6 +14,11 @@ This file provides settings for ESS and R.
 #+begin_src emacs-lisp
  (require 'ess-site)
 #+end_src
+** Coding Hooks
+#+source: ide-ess
+#+begin_src emacs-lisp
+  (add-hook 'ess-mode-hook 'run-starter-kit-coding-hook)
+#+end_src
 
 ** Define Rnw-mode and make LaTeX aware of it. 
 #+srcname: misc-r
@@ -85,6 +90,12 @@ This file provides settings for ESS and R.
   (require 'ess-site)
 #+end_src
 
+** R-autoyas
+   Function completion. Conflicts with autocomplete.
+#+begin_src emacs_lisp :tangle no
+  (require 'r-autoyas)
+  (add hook 'ess-mode-hook 'r-autoyas-ess-activate)
+#+end_src
 ** R-object tooltips
 Taken from http://blogisticreflections.wordpress.com/2009/10/01/r-object-tooltips-in-ess/
 #+begin_quote 
@@ -154,10 +165,11 @@ ESS comes with support for Sweave, e.g.,: M-n s M-n P from the Rnw
 file. But we also want to be able to conveniently use the
 cacheSweave() library, which uses a different driver. So we need a
 separate command for that. The following solution comes from [[http://blog.nguyenvq.com/2009/05/14/editingadding-on-to-sweave-features-in-ess/][Vinh
-Nguyen]] and allows for cachSweave() compilation with M-n w. 
+Nguyen]] and allows for cacheSweave() compilation with M-n w. 
 
 #+source: ess-cacheSweave
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
+
   
 (defun ess-swv-run-in-R2 (cmd &optional choose-process)
   "Run \\[cmd] on the current .Rnw file.  Utility function not called by user."

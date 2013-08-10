@@ -81,16 +81,15 @@ works depends on the flavor of emacs you are using,
 unfortunately. Choose as appropriate from the following options:
 
 **** Option 1
-Require maxframe package to conveniently maxmimize the window. Doesn't work with Emacs 23 on Mac.
+Just maximize the frame. Not true fullscreen
 
 #+srcname: fullscreen-1
-#+begin_src emacs-lisp
-  (require 'maxframe)
-  (global-set-key (kbd "C-c m") 'x-maximize-frame)  
+#+begin_src emacs-lisp :tangle no
+  (global-set-key (kbd "C-c m") 'maximize-frame)  
 #+end_src
 
 **** Option 2
-Fullscreen toggle -- Only works with the (now slightly out-of-date)
+Fullscreen toggle -- Only works with the (out-of-date)
 patched emacs build at =git://github.com/typester/emacs.git=.
 
 #+source: fullscreen-2
@@ -115,8 +114,8 @@ Fullscreen toggle using maxframe.el.
 #+end_src
 
 **** Option 4
-For use with Yamamoto Mitsuharu's Carbon-patched Emacs 23. (This is
-    what I use, but it requires you compile a custom Emacs.)
+For use with Yamamoto Mitsuharu's Carbon-patched Emacs. (This is
+    what I use, but it requires you compile a custom version of Emacs provided by Mitsuharu.)
 
 #+source: fullscreen-4
 #+begin_src emacs-lisp :tangle no
@@ -445,13 +444,13 @@ configuration.
                        pdflatex, or xelatex as appropriate, using latexmk."
       (let ((texcmd)))
       ;; default command: pdflatex 
-      (setq texcmd "latexmk -pdflatex='pdflatex --shell-escape' -pdf %f")        
+      (setq texcmd "latexmk -pdflatex='pdflatex -synctex=1 --shell-escape --' -pdf %f")        
       ;; pdflatex -> .pdf
       (if (string-match "LATEX_CMD: pdflatex" (buffer-string))
-          (setq texcmd "latexmk -pdflatex='pdflatex --shell-escape' -pdf %f"))
+          (setq texcmd "latexmk -pdflatex='pdflatex -synctex=1 --shell-escape' -pdf %f"))
       ;; xelatex -> .pdf
       (if (string-match "LATEX_CMD: xelatex" (buffer-string))
-          (setq texcmd "latexmk -pdflatex='xelatex --shell-escape' -pdf %f"))
+          (setq texcmd "latexmk -pdflatex='xelatex -synctex=1 --shell-escape' -pdf %f"))
       ;; LaTeX compilation command
       (setq org-latex-to-pdf-process (list texcmd)))
     
