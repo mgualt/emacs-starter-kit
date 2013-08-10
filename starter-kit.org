@@ -320,7 +320,7 @@ since they are likely to be used in every session
 
 *** Starter Kit aspell
 aspell workaround in [[file:starter-kit-aspell.org][starter-kit-aspell]]
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (starter-kit-load "starter-kit-aspell.org")
 #+end_src
 

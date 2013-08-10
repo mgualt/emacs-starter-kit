@@ -13,7 +13,7 @@ This is part of the [[file:starter-kit.org][Emacs Starter Kit]].
 #+end_src
 
 *** Load Preview LaTeX
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (load "preview.el" nil t t)
 #+end_src
 

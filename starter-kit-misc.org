@@ -136,7 +136,7 @@ ido-mode is like magic pixie dust!
   (set-default 'imenu-auto-rescan t)
   
   (add-hook 'text-mode-hook 'turn-on-auto-fill)
-  (add-hook 'text-mode-hook 'turn-on-flyspell)
+  ;; (add-hook 'text-mode-hook 'turn-on-flyspell)
   
   (defvar starter-kit-coding-hook nil
     "Hook that gets run on activation of any programming mode.")
@@ -145,6 +145,9 @@ ido-mode is like magic pixie dust!
   ;; Seed the random-number generator
   (random t)
 #+end_src
+
+#+RESULTS:
+: 1078684159647166251
 
 *** functions for prettier source code
 #+begin_src emacs-lisp

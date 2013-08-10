@@ -34,10 +34,21 @@ Finally, the [[*Local%20Org-mode%20XeLaTeX%20Export%20Settings][Local Org-mode X
 Emacs doesn't seem to see the system path which is set in .bash_profile, 
 so we have to set the path here.
 #+srcname: path-settings
-#+begin_src emacs-lisp :tangle no
-  (setenv "PATH" (concat "/usr/local/bin:/usr/texbin:" (getenv "PATH")))
+#+begin_src emacs-lisp 
+(add-to-list 'exec-path '"/usr/texbin")
+(add-to-list 'exec-path '"/usr/local/bin")
 #+end_src
 
+Is this necessary? it seems so. 
+#+srcname: path-settings-PATH
+#+begin_src emacs-lisp
+(setenv "PATH"
+  (concat
+   "/usr/local/bin" ":"
+   (getenv "PATH")
+  )
+)
+#+end_src
 *** Color Theme and Line Highlighting
 The theme package is loaded in =starter-kit-misc.org=. The settings
 here adjust the height of some headings in Org and LaTeX mode, as well
@@ -177,7 +188,7 @@ Set the position of the frame and define function arrange-frame
 Set up AUCTeX to work with the Skim PDF viewer.
 Not sure what is supposed to be commented out here. Resources from [[http://sourceforge.net/apps/mediawiki/skim-app/index.php?title=TeX_and_PDF_Synchronization#Considerations_for_Emacs][sourceforge]].
 #+srcname: local-loadpath
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   ;; Synctex with Skim
   ;;(add-hook 'TeX-mode-hook
   ;;(lambda ()
@@ -233,7 +244,7 @@ Tell RefTeX where the bibliography files are.
     directory you're working in.
 
 #+srcname: vc-command
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
     (fset 'run-vc-then-xelatex
     [?\M-! ?v ?c return ?\C-c ?\C-c return])
     (global-set-key (kbd "C-c c") 'run-vc-then-xelatex);; Run the VC command before running xelatex
@@ -246,7 +257,7 @@ Tell RefTeX where the bibliography files are.
     using org-mode. (See the org-mode customizations below).
 
 #+source: vc-alone
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (global-set-key (kbd "C-c v")
                       (lambda ()
                         (interactive)
@@ -325,7 +336,7 @@ Stop Auctex from using different fonts for the sections and subscripts.
        (ibuffer-auto-mode 1)
        (ibuffer-switch-to-saved-filter-groups "home")))
 #+end_src
-
+   
 ** Local Org-mode Settings
 *** Smart-quote binding
 When in an org-mode buffer, bind TeX-insert-quote to =C-c "=. Turned off by default. 
@@ -369,7 +380,9 @@ When in an org-mode buffer, bind TeX-insert-quote to =C-c "=. Turned off by defa
 #+end_src
 
 *** Babel Settings
-   Configure org-mode so that when you edit source code in an indirect buffer (with C-c '), the buffer is opened in the current window. That way, your window organization isn't broken when switching.
+Configure org-mode so that when you edit source code in an indirect
+buffer (with C-c '), the buffer is opened in the current window. That
+way, your window organization isn't broken when switching.
 
 #+source: orgmode-indirect-buffer-settings
 #+begin_src emacs-lisp
@@ -377,10 +390,13 @@ When in an org-mode buffer, bind TeX-insert-quote to =C-c "=. Turned off by defa
 #+end_src
 
 *** XeLaTeX and pdfLaTeX Export Settings
-   Configure org-mode to export directly to PDF using pdflatex or
-   xelatex, compiling the bibliography as it goes, with my preferred
-   setup in each case. There is a good deal of local stuff in this section. The required style files used below are available at https://github.com/kjhealy/latex-custom-kjh. You may need to adjust or remove some of these settings depending on your
-   preferences and local configuration.
+Configure org-mode to export directly to PDF using pdflatex or
+xelatex, compiling the bibliography as it goes, with my preferred
+setup in each case. There is a good deal of local stuff in this
+section. The required style files used below are available at
+https://github.com/kjhealy/latex-custom-kjh. You may need to adjust or
+remove some of these settings depending on your preferences and local
+configuration.
 
 #+source: orgmode-xelatex-export
 #+begin_src emacs-lisp
@@ -390,14 +406,14 @@ When in an org-mode buffer, bind TeX-insert-quote to =C-c "=. Turned off by defa
     ;; default listings package instead, use
     ;; (setq org-export-latex-listings t)
     ;; and change references to "minted" below to "listings"
-    (setq org-export-latex-listings 'minted)
+    ;; (setq org-export-latex-listings 'minted)
     
     ;; default settings for minted code blocks
-    (setq org-export-latex-minted-options
-          '(;("frame" "single")
-            ("bgcolor" "bg") ; bg will need to be defined in the preamble of your document. It's defined in org-preamble-pdflatex.sty and org-preamble-xelatex.sty below.
-            ("fontsize" "\\small")
-            ))
+    ;; (setq org-export-latex-minted-options
+    ;;      '(;("frame" "single")
+    ;;        ("bgcolor" "bg") ; bg will need to be defined in the preamble of your document. It's defined in org-preamble-pdflatex.sty and org-preamble-xelatex.sty below.
+    ;;        ("fontsize" "\\small")
+    ;;        ))
   ;; turn off the default toc behavior; deal with it properly in headers to files.
   (defun org-export-latex-no-toc (depth)  
       (when depth
@@ -405,22 +421,22 @@ When in an org-mode buffer, bind TeX-insert-quote to =C-c "=. Turned off by defa
                 depth)))
   (setq org-export-latex-format-toc-function 'org-export-latex-no-toc)
   
-    (add-to-list 'org-export-latex-classes
-                 '("memarticle"
-                   "\\documentclass[11pt,oneside,article]{memoir}\n\\input{vc} % vc package"
-                    ("\\section{%s}" . "\\section*{%s}")
-                    ("\\subsection{%s}" . "\\subsection*{%s}")
-                    ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
-                    ("\\paragraph{%s}" . "\\paragraph*{%s}")
-                    ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
+    ;(add-to-list 'org-export-latex-classes
+    ;             '("memarticle"
+    ;               "\\documentclass[11pt,oneside,article]{memoir}\n\\input{vc} % vc package"
+    ;               ("\\section{%s}" . "\\section*{%s}")
+    ;                ("\\subsection{%s}" . "\\subsection*{%s}")
+     ;               ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+      ;              ("\\paragraph{%s}" . "\\paragraph*{%s}")
+       ;             ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
     
-    (add-to-list 'org-export-latex-classes
-                 '("membook"
-                   "\\documentclass[11pt,oneside]{memoir}\n\\input{vc} % vc package"
-                   ("\\chapter{%s}" . "\\chapter*{%s}")
-                   ("\\section{%s}" . "\\section*{%s}")
-                   ("\\subsection{%s}" . "\\subsection*{%s}")
-                   ("\\subsubsection{%s}" . "\\subsubsection*{%s}")))
+    ;(add-to-list 'org-export-latex-classes
+     ;            '("membook"
+      ;             "\\documentclass[11pt,oneside]{memoir}\n\\input{vc} % vc package"
+       ;            ("\\chapter{%s}" . "\\chapter*{%s}")
+        ;           ("\\section{%s}" . "\\section*{%s}")
+         ;          ("\\subsection{%s}" . "\\subsection*{%s}")
+          ;         ("\\subsubsection{%s}" . "\\subsubsection*{%s}")))
     
     ;; Originally taken from Bruno Tavernier: http://thread.gmane.org/gmane.emacs.orgmode/31150/focus=31432
     ;; but adapted to use latexmk 4.22 or higher.  
@@ -448,18 +464,18 @@ When in an org-mode buffer, bind TeX-insert-quote to =C-c "=. Turned off by defa
             ("" "float" )))
     
     ;; Custom packages
-    (defun my-auto-tex-parameters ()
-      "Automatically select the tex packages to include. See https://github.com/kjhealy/latex-custom-kjh for the support files included here."
-      ;; default packages for ordinary latex or pdflatex export
-      (setq org-export-latex-default-packages-alist
-            '(("AUTO" "inputenc" t)
-              ("minted,minion" "org-preamble-pdflatex" t)))        
-      ;; Packages to include when xelatex is used
-      (if (string-match "LATEX_CMD: xelatex" (buffer-string))
-          (setq org-export-latex-default-packages-alist
-                '(("minted" "org-preamble-xelatex" t) ))))
-    
-    (add-hook 'org-export-latex-after-initial-vars-hook 'my-auto-tex-parameters)      
+    ;(defun my-auto-tex-parameters ()
+    ;  "Automatically select the tex packages to include. See https://github.com/kjhealy/latex-custom-kjh for the support files included here."
+    ;  ;; default packages for ordinary latex or pdflatex export
+    ;  (setq org-export-latex-default-packages-alist
+    ;        '(("AUTO" "inputenc" t)
+    ;          ("minted,minion" "org-preamble-pdflatex" t)))        
+    ;  ;; Packages to include when xelatex is used
+    ;  (if (string-match "LATEX_CMD: xelatex" (buffer-string))
+    ;      (setq org-export-latex-default-packages-alist
+    ;            '(("minted" "org-preamble-xelatex" t) ))))
+    ; 
+    ;  (add-hook 'org-export-latex-after-initial-vars-hook 'my-auto-tex-parameters)      
 #+end_src
 
 *** ebib and citation settings
@@ -621,6 +637,8 @@ Startup using [[http://orgmode.org/manual/Clean-view.html][org-indent-mode]].
   
 #+end_src
 
+#+RESULTS:
+
 ** IRC
 Sometimes useful for getting help on R or Emacs. 
 #+source: rirc-configuration
@@ -637,14 +655,14 @@ Some last tweaks.
 #+srcname: final-custom
 #+begin_src emacs-lisp
   ;; Line-spacing tweak (Optimized for PragmataPro)
-  (setq-default line-spacing 5)
+  (setq-default line-spacing 2)
   
   ;; minimize fringe
   (setq-default indicate-empty-lines nil)
   
   ;; Add keybindings for commenting regions of text
   (global-set-key (kbd "C-c ;") 'comment-or-uncomment-region)
-  (global-set-key (kbd "M-'") 'comment-or-uncomment-region)
+  ;(global-set-key (kbd "M-'") 'comment-or-uncomment-region)
   
   ;; Base dir
   (cd "~/")
@@ -655,15 +673,36 @@ Some last tweaks.
   ;; If you edit it by hand, you could mess it up, so be careful.
   ;; Your init file should contain only one such instance.
   ;; If there is more than one, they won't work right.
-  '(LaTeX-XeTeX-command "xelatex -synctex=1")
-  '(TeX-engine (quote xetex))
-  '(TeX-view-program-list (quote (("Skim" "/Applications/Skim.app/Contents/SharedSupport/displayline %n %o %b"))))
-  '(TeX-view-program-selection (quote (((output-dvi style-pstricks) "dvips and gv") (output-dvi "xdvi") (output-pdf "Skim") (output-html "xdg-open"))))
+  ;; '(LaTeX-XeTeX-command "xelatex -synctex=1")
+  ;; '(TeX-engine (quote xetex))
+  ;; '(TeX-view-program-list (quote (("Skim" "/Applications/Skim.app/Contents/SharedSupport/displayline %n %o %b"))))
+  ;; '(TeX-view-program-selection (quote (((output-dvi style-pstricks) "dvips and gv") (output-dvi "xdvi") (output-pdf "Skim") (output-html "xdg-open"))))
   '(show-paren-mode t)
   '(blink-cursor-mode nil)
   '(text-mode-hook (quote (text-mode-hook-identify)))
   )
+  
+  ;; make latexmk available via C-c C-c
+;; Note: SyncTeX is setup via ~/.latexmkrc (see below)
+(add-hook 'LaTeX-mode-hook (lambda ()
+  (push
+    '("latexmk" "latexmk -pdf %s" TeX-run-TeX nil t
+      :help "Run latexmk on file")
+    TeX-command-list)))
+(add-hook 'TeX-mode-hook '(lambda () (setq TeX-command-default "latexmk")))
+
+;; use Skim as default pdf viewer
+;; Skim's displayline is used for forward search (from .tex to .pdf)
+;; option -b highlights the current line; option -g opens Skim in the background  
+(setq TeX-view-program-selection '((output-pdf "PDF Viewer")))
+(setq TeX-view-program-list
+     '(("PDF Viewer" "/Applications/Skim.app/Contents/SharedSupport/displayline -b -g %n %o %b")))
+
+(server-start); start emacs in server mode so that skim can talk to it
+  
 #+end_src
+
+#+RESULTS:
 
 ** Initial Buffer
 Make the initial buffer be the main directory for all my projects.
