@@ -31,20 +31,18 @@ Finally, the [[*Local%20Org-mode%20XeLaTeX%20Export%20Settings][Local Org-mode X
 
 ** Local Miscellaneous Settings
 *** PATH settings
-Emacs doesn't seem to see the system path which is set in .bash_profile, 
-so we have to set the path here.
-#+srcname: path-settings
-#+begin_src emacs-lisp 
-(add-to-list 'exec-path '"/usr/texbin")
-(add-to-list 'exec-path '"/usr/local/bin")
-#+end_src
+    Emacs doesn't seem to see the system path which is set in .bash_profile, 
+    so we have to set the path here.
 
-#+RESULTS:
-| /usr/local/bin | /usr/texbin | /Users/mgualt/.rvm/gems/ruby-1.9.2-p320/bin/ | /Users/mgualt/.rvm/gems/ruby-1.9.2-p320@global/bin/ | /Users/mgualt/.rvm/rubies/ruby-1.9.2-p320/bin/ | /Users/mgualt/.rvm/bin/ | /usr/local/Cellar/gettext/0.18.1.1/include/ | /usr/gcc-4.7.1/bin/ | /usr/local/bin/ | /usr/bin/ | /bin/ | /usr/sbin/ | /sbin/ | /usr/local/bin/ | /opt/X11/bin/ | /usr/X11/bin/ | /usr/texbin/ |
+#+srcname: path-settings
+#+begin_src emacs-lisp  :tangle no
+  (add-to-list 'exec-path '"/usr/texbin")
+  (add-to-list 'exec-path '"/usr/local/bin")
+#+end_src
 
 Is this necessary? it seems so. 
 #+srcname: path-settings-PATH
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 (setenv "PATH"
   (concat
    "/usr/local/bin" ":"
@@ -53,16 +51,13 @@ Is this necessary? it seems so.
 )
 #+end_src
 
-#+RESULTS:
-: /usr/local/bin:/usr/local/bin:/usr/texbin:/Users/mgualt/.rvm/gems/ruby-1.9.2-p320/bin:/Users/mgualt/.rvm/gems/ruby-1.9.2-p320@global/bin:/Users/mgualt/.rvm/rubies/ruby-1.9.2-p320/bin:/Users/mgualt/.rvm/bin:/usr/local/Cellar/gettext/0.18.1.1/include:/usr/gcc-4.7.1/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/opt/X11/bin:/usr/X11/bin:/usr/texbin
-
-*** Color Theme and Line Highlighting
+*** Color Theme Tweaks
 The theme package is loaded in =starter-kit-misc.org=. The settings
 here adjust the height of some headings in Org and LaTeX mode, as well
 as turning off the sans-serif heading style that AucTeX defaults to.
 
 #+srcname: local-settings
-#+begin_src emacs-lisp :tangle no 
+#+begin_src emacs-lisp
   (add-hook 'latex-mode-hook 
             (lambda ()
               (set-face-attribute 'font-latex-sectioning-5-face nil :inherit nil :foreground "#b58900")
@@ -81,13 +76,11 @@ as turning off the sans-serif heading style that AucTeX defaults to.
                (set-face-attribute 'org-level-5 nil :height 1.1)))
 #+end_src
 
-#+RESULTS:
-
 *** Run Emacs in Full Screen
-I find it very useful to run Emacs in full-screen mode. There is no
-completely satisfactory way to accomplish this on Mac OS X. What
-works depends on the flavor of emacs you are using,
-unfortunately. Choose as appropriate from the following options:
+  I find it very useful to run Emacs in full-screen mode. There is no
+    completely satisfactory way to accomplish this on Mac OS X. What
+    works depends on the flavor of emacs you are using,
+    unfortunately. Choose as appropriate from the following options. Enable one of them by changing the value of =:tangle= to =yes=. 
 
 **** Option 1
 Just maximize the frame. Not true fullscreen
@@ -106,7 +99,7 @@ patched emacs build at =git://github.com/typester/emacs.git=.
   (global-set-key (kbd "C-c m") 'ns-toggle-fullscreen)
 #+end_src
 
-**** Option 3
+**** Option 3  
 Fullscreen toggle using maxframe.el. 
 #+source: fullscreen-3
 #+begin_src emacs-lisp :tangle no
@@ -127,45 +120,31 @@ For use with Yamamoto Mitsuharu's Carbon-patched Emacs. (This is
     what I use, but it requires you compile a custom version of Emacs provided by Mitsuharu.)
 
 #+source: fullscreen-4
-#+begin_src emacs-lisp :tangle no
-  (defun fullscreen (&optional f)
-    (interactive)
-    (set-frame-parameter f 'fullscreen
-                         (if (frame-parameter f 'fullscreen) nil 'fullboth)))
-  (global-set-key (kbd "C-c f") 'fullscreen)
-  (add-hook 'after-make-frame-functions 'fullscreen)
+#+begin_src emacs-lisp
+    (defun fullscreen (&optional f)
+      (interactive)
+      (set-frame-parameter f 'fullscreen
+                           (if (frame-parameter f 'fullscreen) nil 'fullboth)))
+    (global-set-key (kbd "C-c f") 'fullscreen)
+    (add-hook 'after-make-frame-functions 'fullscreen)
 #+end_src
 
-**** Option 5
-Internal to emacs; also seems not to work on OS X.
-#+source: fullscreen-5
-#+begin_src emacs-lisp :tangle no
- (defun toggle-fullscreen (&optional f)
-    (interactive)
-    (let ((current-value (frame-parameter nil 'fullscreen)))
-         (set-frame-parameter nil 'fullscreen
-                              (if (equal 'fullboth current-value)
-                                  (if (boundp 'old-fullscreen) old-fullscreen nil)
-                                  (progn (setq old-fullscreen current-value)
-                                         'fullboth)))))
-  (global-set-key (kbd "C-c f") 'toggle-fullscreen)  
-#+end_src
-    
 *** Mac Key mode
     Used with Mitsuharu Yamamoto's carbon-patched Emacs, which turns
     off support for default mac bindings. Turned off by default.
 #+srcname: mac-keys
 #+begin_src emacs-lisp :tangle no
-  (require 'mac-key-mode)
-  (mac-key-mode 1)
-  (add-hook 'mac-key-mode-hook
-      (lambda()
-        (interactive)
-        (if mac-key-mode
-            (setq mac-option-modifier 'meta)
-            (setq mac-option-modifier nil)
-            )))
+   (require 'mac-key-mode)
+   (mac-key-mode 1)
+   (add-hook 'mac-key-mode-hook
+       (lambda()
+         (interactive)
+         (if mac-key-mode
+             (setq mac-option-modifier 'meta)
+             (setq mac-option-modifier nil)
+             )))
 #+end_src
+
 *** Frame position
 Set the position of the frame and define function arrange-frame  
 #+srcname: arrange-frame
@@ -182,6 +161,35 @@ Set the position of the frame and define function arrange-frame
 (arrange-frame 90 60 200 100 1)
 #+end_src
 
+*** Dired-x
+Dired extensions
+#+source: Dired-x
+#+begin_src emacs-lisp
+  (load "dired-x")
+#+end_src
+
+*** Dired open multiple files
+In dired mode, visit all marked files using. Bound to the "F" key. 
+#+source: dired-F
+#+begin_src emacs-lisp
+  (eval-after-load "dired"
+  '(progn
+     (define-key dired-mode-map "F" 'my-dired-find-file)
+     (defun my-dired-find-file (&optional arg)
+       "Open each of the marked files, or the file under the point, or when prefix arg, the next N files "
+       (interactive "P")
+       (let* ((fn-list (dired-get-marked-files nil arg)))
+         (mapc 'find-file fn-list)))))
+#+end_src
+
+*** Stripe Dired buffers
+#+name: stripe-dired
+#+begin_src emacs-lisp
+  (require 'stripe-buffer)
+  (add-hook 'org-mode-hook 'org-table-stripes-enable)
+  (add-hook 'dired-mode-hook 'stripe-listify-buffer)  
+#+end_src
+
 ** Local LaTeX settings
 *** In-text Smart Quotes (XeLaTeX only)
     Redefine TeX-open-quote and TeX-close-quote to be smart quotes by default. Below, in the local org-mode settings, we'll also map the relevant function to a key we can use in org-mode, too. If you don't use XeLaTeX for processing all your =.tex= files, you should disable this option.
@@ -194,55 +202,42 @@ Set the position of the frame and define function arrange-frame
 
 *** SyncTeX, PDF mode, Skim
 Set up AUCTeX to work with the Skim PDF viewer.
-Not sure what is supposed to be commented out here. Resources from [[http://sourceforge.net/apps/mediawiki/skim-app/index.php?title=TeX_and_PDF_Synchronization#Considerations_for_Emacs][sourceforge]].
-#+srcname: local-loadpath
-#+begin_src emacs-lisp :tangle no
-  ;; Synctex with Skim
-  ;;(add-hook 'TeX-mode-hook
-  ;;(lambda ()
-  ;;(add-to-list 'TeX-output-view-style
-  ;;'("^pdf$" "."
-  ;; "/Applications/Skim.app/Contents/SharedSupport/displayline %n %o %b")))
-  ;; )
-  
-  ;; Make emacs aware of multi-file projects
-  ;; (setq-default TeX-master nil)
 
-  ;; Starts the Emacs server
-  ;; (server-start)
-  ;; Auto-raise Emacs on activation (from Skim, usually)
-  (defun raise-emacs-on-aqua()
-  (shell-command "osascript -e 'tell application \"Emacs\" to activate' &"))
-  (add-hook 'server-switch-hook 'raise-emacs-on-aqua)
+#+srcname: sync
+#+begin_src emacs-lisp
+    ;; Synctex with Skim
+    (add-hook 'TeX-mode-hook
+    (lambda ()
+    (add-to-list 'TeX-output-view-style
+    '("^pdf$" "."
+     "/Applications/Skim.app/Contents/SharedSupport/displayline %n %o %b")))
+     )
+    
+  (setq TeX-view-program-selection '((output-pdf "PDF Viewer")))
+  (setq TeX-view-program-list
+       '(("PDF Viewer" "/Applications/Skim.app/Contents/SharedSupport/displayline -b -g %n %o %b")))
+     
+    ;; Make emacs aware of multi-file projects
+    ;; (setq-default TeX-master nil)
+    
+    ;; Auto-raise Emacs on activation (from Skim, usually)
+    (defun raise-emacs-on-aqua()
+    (shell-command "osascript -e 'tell application \"Emacs\" to activate' &"))
+    (add-hook 'server-switch-hook 'raise-emacs-on-aqua)
 #+end_src
 
 *** Local RefTeX Settings
 Tell RefTeX where the bibliography files are. 
 
 #+srcname: local-reftex
-#+begin_src emacs-lisp :tangle no    
+#+begin_src emacs-lisp :tangle no   
     ;; Make RefTex able to find my local bib files
     (setq reftex-bibpath-environment-variables
-    '("/Users/mgualt/Dropbox/Research/Bibliography"))
+    '("/Users/kjhealy/Library/texmf/bibtex/bib"))
 
     ;; Default bibliography
     (setq reftex-default-bibliography
-    '("/Users/mgualt/Dropbox/Research/Bibliography/Master.bib"))
-
-
-    ;; CDLaTex minor mode: tab-trigger environments, paired paren
-    ;; insertion, etc
-    ;; (autoload 'cdlatex-mode "cdlatex" "CDLaTeX Mode" t)
-    ;; (autoload 'turn-on-cdlatex "cdlatex" "CDLaTeX Mode" nil)
-    ;; (add-hook 'LaTeX-mode-hook 'turn-on-cdlatex)   ; with AUCTeX LaTeX
-    ;;                                         ; mode
-
-    ;; set which characters are autopaired // Doesn't work. Set in custom, below.
-    ;; (add-hook 'cdlatex-mode-hook
-    ;;   (function (lambda ()
-    ;;               (setq cdlatex-paired-parens
-    ;;                     '("$[{("))
-    ;;             )))
+    '("/Users/kjhealy/Documents/bibs/socbib.bib"))
 #+end_src
 
 *** Local vc commands
@@ -272,7 +267,7 @@ Tell RefTeX where the bibliography files are.
                         (shell-command "vc")))
 
 #+end_src
-    
+
 *** Outline mode
 turning on the outline minor mode,
 opening with body hidden, 
@@ -301,52 +296,58 @@ Stop Auctex from using different fonts for the sections and subscripts.
   (setq font-latex-fontify-sectioning 'color)
   (setq font-latex-fontify-script nil)
 #+end_src
-
-#+RESULTS:
-
+  
 ** Local Pandoc Support 
- Make Emacs see where pandoc is installed. (Emacs can't access the bash
- $PATH directly.)
+A pandoc menu for markdown and tex files. 
 #+src-name: pandoc_mode
-#+begin_src emacs-lisp :tangle no
- (setenv "PATH" (concat "/Users/mgualt/.cabal/bin:" (getenv "PATH")))
- (load "pandoc-mode")
- (add-hook 'markdown-mode-hook 'turn-on-pandoc)
- (add-hook 'pandoc-mode-hook 'pandoc-load-default-settings)
+#+begin_src emacs-lisp 
+  (load "pandoc-mode")
+  (add-hook 'markdown-mode-hook 'turn-on-pandoc)
+  (add-hook 'TeX-mode-hook 'turn-on-pandoc)
+  (add-hook 'pandoc-mode-hook 'pandoc-load-default-settings)
+#+end_src
+
+** Local Polymode Support
+Polymode is a new package that supports multiple modes inside a single buffer. It is aimed particularly at literate programming approaches and supports, e.g., R and markdown in a single =.Rmd= file. So it is very useful with knitr in R, given that ESS does not yet fully support =.Rmd= files.
+
+#+source: Polymode
+#+begin_src emacs-lisp
+  (require 'poly-R)
+  (require 'poly-markdown)
 #+end_src
 
 ** Local iBuffer Settings
-Manage a lot of buffers easily with C-x C-b. Already set up
-elsewhere in the starter kit. Add local configuration here, e.g.,
-display categories.
+   Manage a lot of buffers easily with C-x C-b. Already set up
+   elsewhere in the starter kit. Add local configuration here, e.g.,
+   display categories.
 #+srcname: iBuffer-custom
 #+begin_src emacs-lisp 
   (setq ibuffer-saved-filter-groups
-        '(("home"
-           ("emacs-config" (or (filename . ".emacs.d")
-                               (filename . "emacs-config")))
-           ("Org" (or (mode . org-mode)
-                      (filename . "OrgMode")))
-           ("Web Dev" (or (mode . html-mode)
-                          (mode . css-mode)))
-           ("Magit" (name . "\*magit"))
-           ("ESS" (mode . ess-mode))
-           ("LaTeX" (mode . latex-mode))
-           ("Help" (or (name . "\*Help\*")
-                       (name . "\*Apropos\*")
-                       (name . "\*info\*"))))))
-  
-  (add-hook 'ibuffer-mode-hook 
-            '(lambda ()
-               (ibuffer-switch-to-saved-filter-groups "home")))
-  (setq ibuffer-show-empty-filter-groups nil)                     
-  (setq ibuffer-expert t)
-  (add-hook 'ibuffer-mode-hook 
-            '(lambda ()
-               (ibuffer-auto-mode 1)
-               (ibuffer-switch-to-saved-filter-groups "home")))
-   
+      '(("home"
+	 ("emacs-config" (or (filename . ".emacs.d")
+			     (filename . "emacs-config")))
+	 ("Org" (or (mode . org-mode)
+		    (filename . "OrgMode")))
+	 ("Web Dev" (or (mode . html-mode)
+			(mode . css-mode)))
+	 ("Magit" (name . "\*magit"))
+	 ("ESS" (mode . ess-mode))
+         ("LaTeX" (mode . latex-mode))
+	 ("Help" (or (name . "\*Help\*")
+		     (name . "\*Apropos\*")
+		     (name . "\*info\*"))))))
+
+        (add-hook 'ibuffer-mode-hook 
+	             '(lambda ()
+	             (ibuffer-switch-to-saved-filter-groups "home")))
+       (setq ibuffer-show-empty-filter-groups nil)                     
+       (setq ibuffer-expert t)
+       (add-hook 'ibuffer-mode-hook 
+       '(lambda ()
+       (ibuffer-auto-mode 1)
+       (ibuffer-switch-to-saved-filter-groups "home")))
 #+end_src
+
 ** Local Org-mode Settings
 *** Smart-quote binding
 When in an org-mode buffer, bind TeX-insert-quote to =C-c "=. Turned off by default. 
@@ -390,9 +391,7 @@ When in an org-mode buffer, bind TeX-insert-quote to =C-c "=. Turned off by defa
 #+end_src
 
 *** Babel Settings
-Configure org-mode so that when you edit source code in an indirect
-buffer (with C-c '), the buffer is opened in the current window. That
-way, your window organization isn't broken when switching.
+   Configure org-mode so that when you edit source code in an indirect buffer (with C-c '), the buffer is opened in the current window. That way, your window organization isn't broken when switching.
 
 #+source: orgmode-indirect-buffer-settings
 #+begin_src emacs-lisp
@@ -400,99 +399,70 @@ way, your window organization isn't broken when switching.
 #+end_src
 
 *** XeLaTeX and pdfLaTeX Export Settings
-Configure org-mode to export directly to PDF using pdflatex or
-xelatex, compiling the bibliography as it goes, with my preferred
-setup in each case. There is a good deal of local stuff in this
-section. The required style files used below are available at
-https://github.com/kjhealy/latex-custom-kjh. You may need to adjust or
-remove some of these settings depending on your preferences and local
-configuration.
+   Configure org-mode to export directly to PDF using  xelatex, compiling the bibliography as it goes, with my preferred setup in each case. There is a good deal of local stuff in this section. The required style files used below are available at https://github.com/kjhealy/latex-custom-kjh. You may need to adjust or remove some of these settings depending on your preferences and local configuration.
 
 #+source: orgmode-xelatex-export
-#+begin_src emacs-lisp :tangle no
-    (require 'org-latex)   
+#+begin_src emacs-lisp
+  
     ;; Choose either listings or minted for exporting source code blocks.
     ;; Using minted (as here) requires pygments be installed. To use the
     ;; default listings package instead, use
-    ;; (setq org-export-latex-listings t)
+    ;; (setq org-latex-listings t)
     ;; and change references to "minted" below to "listings"
-    ;; (setq org-export-latex-listings 'minted)
+    (setq org-latex-listings 'minted)
     
-    ;; default settings for minted code blocks
-    ;; (setq org-export-latex-minted-options
-    ;;      '(;("frame" "single")
-    ;;        ("bgcolor" "bg") ; bg will need to be defined in the preamble of your document. It's defined in org-preamble-pdflatex.sty and org-preamble-xelatex.sty below.
-    ;;        ("fontsize" "\\small")
-    ;;        ))
+    ;; default settings for minted code blocks.
+    ;; bg will need to be defined in the preamble of your document. It's defined in  org-preamble-xelatex.sty below.
+    (setq org-latex-minted-options
+          '(;("frame" "single")
+            ("bgcolor" "bg") 
+            ("fontsize" "\\small")
+            ))
+    
   ;; turn off the default toc behavior; deal with it properly in headers to files.
-  (defun org-export-latex-no-toc (depth)  
-      (when depth
+  (defun org-latex-no-toc (depth)  
+    (when depth
         (format "%% Org-mode is exporting headings to %s levels.\n"
                 depth)))
-  (setq org-export-latex-format-toc-function 'org-export-latex-no-toc)
+  (setq org-latex-format-toc-function 'org-latex-no-toc)
   
-    ;(add-to-list 'org-export-latex-classes
-    ;             '("memarticle"
-    ;               "\\documentclass[11pt,oneside,article]{memoir}\n\\input{vc} % vc package"
-    ;               ("\\section{%s}" . "\\section*{%s}")
-    ;                ("\\subsection{%s}" . "\\subsection*{%s}")
-     ;               ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
-      ;              ("\\paragraph{%s}" . "\\paragraph*{%s}")
-       ;             ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
-    
-    ;(add-to-list 'org-export-latex-classes
-     ;            '("membook"
-      ;             "\\documentclass[11pt,oneside]{memoir}\n\\input{vc} % vc package"
-       ;            ("\\chapter{%s}" . "\\chapter*{%s}")
-        ;           ("\\section{%s}" . "\\section*{%s}")
-         ;          ("\\subsection{%s}" . "\\subsection*{%s}")
-          ;         ("\\subsubsection{%s}" . "\\subsubsection*{%s}")))
-    
-    ;; Originally taken from Bruno Tavernier: http://thread.gmane.org/gmane.emacs.orgmode/31150/focus=31432
-    ;; but adapted to use latexmk 4.22 or higher.  
-    (defun my-auto-tex-cmd ()
-      "When exporting from .org with latex, automatically run latex,
-                       pdflatex, or xelatex as appropriate, using latexmk."
-      (let ((texcmd)))
-      ;; default command: pdflatex 
-      (setq texcmd "latexmk -pdflatex='pdflatex -synctex=1 --shell-escape --' -pdf %f")        
-      ;; pdflatex -> .pdf
-      (if (string-match "LATEX_CMD: pdflatex" (buffer-string))
-          (setq texcmd "latexmk -pdflatex='pdflatex -synctex=1 --shell-escape' -pdf %f"))
-      ;; xelatex -> .pdf
-      (if (string-match "LATEX_CMD: xelatex" (buffer-string))
-          (setq texcmd "latexmk -pdflatex='xelatex -synctex=1 --shell-escape' -pdf %f"))
-      ;; LaTeX compilation command
-      (setq org-latex-to-pdf-process (list texcmd)))
-    
-    (add-hook 'org-export-latex-after-initial-vars-hook 'my-auto-tex-cmd)
-    
-    ;; Default packages included in /every/ tex file, latex, pdflatex or xelatex
-    (setq org-export-latex-packages-alist
-          '(("" "graphicx" t)
+  ;; note the insertion of the \input statement for the vc information 
+  (add-to-list 'org-latex-classes
+                 '("memarticle"
+                   "\\documentclass[11pt,oneside,article]{memoir}\n\\input{vc} % vc package"
+                    ("\\section{%s}" . "\\section*{%s}")
+                    ("\\subsection{%s}" . "\\subsection*{%s}")
+                    ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+                    ("\\paragraph{%s}" . "\\paragraph*{%s}")
+                    ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
+  
+  (add-to-list 'org-latex-classes
+                 '("membook"
+                   "\\documentclass[11pt,oneside]{memoir}\n\\input{vc} % vc package"
+                   ("\\chapter{%s}" . "\\chapter*{%s}")
+                   ("\\section{%s}" . "\\section*{%s}")
+                   ("\\subsection{%s}" . "\\subsection*{%s}")
+                   ("\\subsubsection{%s}" . "\\subsubsection*{%s}")))
+   
+  ;; LaTeX compilation command. For orgmode docs we just always use xelatex for convenience.
+  ;; You can change it to pdflatex if you like, just remember to make the adjustments to the packages-alist below.
+  (setq org-latex-pdf-process '("latexmk -pdflatex='xelatex -synctex=1 --shell-escape' -pdf %f"))
+  
+  ;; Default packages included in the tex file. As before, org-preamble-xelatex is part of latex-custom-kjh.
+  ;; There's org-preamble-pdflatex as well, if you wish to use that instead.
+  (setq org-latex-default-packages-alist nil)     
+  (setq org-latex-packages-alist
+          '(("minted" "org-preamble-xelatex" t)
+            ("" "graphicx" t)
             ("" "longtable" nil)
-            ("" "float" )))
-    
-    ;; Custom packages
-    ;(defun my-auto-tex-parameters ()
-    ;  "Automatically select the tex packages to include. See https://github.com/kjhealy/latex-custom-kjh for the support files included here."
-    ;  ;; default packages for ordinary latex or pdflatex export
-    ;  (setq org-export-latex-default-packages-alist
-    ;        '(("AUTO" "inputenc" t)
-    ;          ("minted,minion" "org-preamble-pdflatex" t)))        
-    ;  ;; Packages to include when xelatex is used
-    ;  (if (string-match "LATEX_CMD: xelatex" (buffer-string))
-    ;      (setq org-export-latex-default-packages-alist
-    ;            '(("minted" "org-preamble-xelatex" t) ))))
-    ; 
-    ;  (add-hook 'org-export-latex-after-initial-vars-hook 'my-auto-tex-parameters)      
+            ("" "float" ))) 
 #+end_src
 
 *** ebib and citation settings
     ebib is a bibtex database manager that works inside emacs. It can
     talk to org-mode. See [[http://orgmode.org/worg/org-tutorials/org-latex-export.html#sec-17_2][this Worg tutorial]] for details. 
 #+source: ebib-setup
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
     (org-add-link-type "ebib" 'ebib)
   
    (org-add-link-type 
@@ -590,64 +560,24 @@ configuration.
 Create =html= files form the =org= sources, to help with documentation. To set up org-mode for publishing projects to HTML you will need to change these settings, as they apply only to the Starter Kit. 
 
 #+source: html-export-settings
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
   (setq org-publish-project-alist
          '(("org"
             :base-directory "~/.emacs.d/"
             :publishing-directory "~/Documents/websites/esk/"
-            :auto-sitemap t
+            :publishing-function org-html-publish-to-html
+            :auto-sitemap t            
             :sitemap-filename "index.org"
             :sitemap-title "Emacs Starter Kit for the Social Sciences: Documentation"
             :section-numbers t
-            :table-of-contents nil
-            :style "<link rel=\"stylesheet\"
-                   href=\"http://kieranhealy.org/stylesheets/screen.css\"
-                   type=\"text/css\"/>")))
+            :table-of-contents t
+            :html-head "<link rel=\"stylesheet\"
+                   href=\"http://kieranhealy.org/css/org.css\"
+                   type=\"text/css\"/>"            )))
   
-    (setq org-export-html-style-extra "") 
-    (setq org-export-html-postamble nil)
-
-#+end_src
-
-*** Cosmetic Settings
-Startup using [[http://orgmode.org/manual/Clean-view.html][org-indent-mode]].
-
-#+source: org-indent-mode
-#+begin_src emacs-lisp
-  (setq org-startup-indented t)
-#+end_src
-
-** Auto-complete mode
-   Powerful autocompletion; experimentally added. Will pop-up
-   autocomplete suggestions as you type; hit =TAB= to complete, or
-   choose from the menu of options.
-
-#+source: auto-complete
-#+begin_src emacs-lisp :tangle no
-  ;; compile it if the .el file is newer 
-  (byte-recompile-directory "~/.emacs.d/src/auto-complete")
-  (byte-recompile-directory "~/.emacs.d/src/auto-complete/dict/ess")
-  (require 'auto-complete)
-  (require 'auto-complete-config)
-  (global-auto-complete-mode t)
-  (add-to-list 'ac-dictionary-directories "~/.emacs.d/src/auto-complete/dict")
-  (setq ac-modes (append ac-modes '(org-mode))) 
-  (ac-config-default)
-  (define-key ac-complete-mode-map [tab] 'ac-expand)
-  (require 'ac-R)
-  (setq ac-auto-start 4)
-  (ac-flyspell-workaround)
-  (define-key ac-mode-map (kbd "M-TAB") 'auto-complete)
-  (setq ac-auto-show-menu 0.8)
-  ;; 
-  (set-face-background 'ac-candidate-face "#366060")
-  (set-face-foreground 'ac-selection-face "#1f1f1f")
-  (set-face-background 'ac-selection-face "#8cd0d3")
-  (set-face-foreground 'ac-selection-face "#1f1f1f")
+  (setq org-html-postamble nil)
   
 #+end_src
-
-#+RESULTS:
 
 ** IRC
 Sometimes useful for getting help on R or Emacs. 
@@ -659,70 +589,6 @@ Sometimes useful for getting help on R or Emacs.
                        '("irc.freenode.net"))
 #+end_src
 
-** Final Custom elements
-Some last tweaks. 
-
-#+srcname: final-custom
-#+begin_src emacs-lisp
-  
-  ;; scroll one line at a time (less "jumpy" than defaults)
-  
-  (setq mouse-wheel-scroll-amount '(1 ((shift) . 1))) ;; one line at a time
-  (setq mouse-wheel-progressive-speed nil) ;; don't accelerate scrolling
-  (setq mouse-wheel-follow-mouse 't) ;; scroll window under mouse
-  (setq scroll-step 1) ;; keyboard scroll one line at a time
-  (setq scroll-conservatively 10000)
-  (setq auto-window-vscroll nil)
-  
-  ;; Line-spacing tweak (Optimized for PragmataPro)
-  (setq-default line-spacing 2)
-  
-  ;; minimize fringe
-  (setq-default indicate-empty-lines nil)
-  
-  ;; Add keybindings for commenting regions of text
-  (global-set-key (kbd "C-c ;") 'comment-or-uncomment-region)
-  ;;(global-set-key (kbd "M-'") 'comment-or-uncomment-region)
-  
-  ;; Base dir 
-  (cd "~/")
-  
-  ;; custom variables kludge. Why can't I get these to work via setq?
-  (custom-set-variables
-   ;; custom-set-variables was added by Custom.
-   ;; If you edit it by hand, you could mess it up, so be careful.
-   ;; Your init file should contain only one such instance.
-   ;; If there is more than one, they won't work right.
-   ;; '(LaTeX-XeTeX-command "xelatex -synctex=1")
-   ;; '(TeX-engine (quote xetex))
-   ;; '(TeX-view-program-list (quote (("Skim" "/Applications/Skim.app/Contents/SharedSupport/displayline %n %o %b"))))
-   ;; '(TeX-view-program-selection (quote (((output-dvi style-pstricks) "dvips and gv") (output-dvi "xdvi") (output-pdf "Skim") (output-html "xdg-open"))))
-   '(show-paren-mode t)
-   '(blink-cursor-mode nil)
-   '(text-mode-hook (quote (text-mode-hook-identify)))
-   )
-  
-  ;; make latexmk available via C-c C-c
-  ;; Note: SyncTeX is setup via ~/.latexmkrc (see below)
-  (add-hook 'LaTeX-mode-hook (lambda ()
-                               (push
-                                '("latexmk" "latexmk -pdf %s" TeX-run-TeX nil t
-                                  :help "Run latexmk on file")
-                                TeX-command-list)))
-  (add-hook 'TeX-mode-hook '(lambda () (setq TeX-command-default "latexmk")))
-  
-  ;; use Skim as default pdf viewer
-  ;; Skim's displayline is used for forward search (from .tex to .pdf)
-  ;; option -b highlights the current line; option -g opens Skim in the background  
-  (setq TeX-view-program-selection '((output-pdf "PDF Viewer")))
-  (setq TeX-view-program-list
-        '(("PDF Viewer" "/Applications/Skim.app/Contents/SharedSupport/displayline -b -g %n %o %b")))
-  
-  (server-start); start emacs in server mode so that skim can talk to it
-  
-#+end_src
-
-#+RESULTS:
 
 ** Initial Buffer
 Make the initial buffer be the main directory for all my projects.
@@ -731,8 +597,49 @@ Make the initial buffer be the main directory for all my projects.
 #+begin_src emacs-lisp 
  (setq initial-buffer-choice "~/Dropbox")
 #+end_src
+
+
+** Final Custom elements
+Some last tweaks. 
+
+#+srcname: final-custom
+#+begin_src emacs-lisp
+    ;; Line-spacing tweak (Optimized for PragmataPro)
+    (setq-default line-spacing 2)
+    
+    ;; minimize fringe
+    (setq-default indicate-empty-lines nil)
+    
+    ;; Add keybindings for commenting regions of text
+    (global-set-key (kbd "C-c ;") 'comment-or-uncomment-region)
+    ;;(global-set-key (kbd "M-'") 'comment-or-uncomment-region)
+    
+    ;; Base dir
+    (cd "~/")
+    
+    ;; custom variables kludge. Why can't I get these to work via setq?
+    (custom-set-variables
+    ;; custom-set-variables was added by Custom.
+    ;; If you edit it by hand, you could mess it up, so be careful.
+    ;; Your init file should contain only one such instance.
+    ;; If there is more than one, they won't work right.
+    '(LaTeX-XeTeX-command "xelatex -synctex=1")
+    '(TeX-engine (quote xetex))
+    ;; '(TeX-view-program-list (quote (("Skim" "/Applications/Skim.app/Contents/SharedSupport/displayline %n %o %b"))))
+    ;; '(TeX-view-program-selection (quote (((output-dvi style-pstricks) "dvips and gv") (output-dvi "xdvi") (output-pdf "Skim") (output-html "xdg-open"))))
+    '(show-paren-mode t)
+    '(blink-cursor-mode nil)
+    '(text-mode-hook (quote (text-mode-hook-identify)))
+    )
+#+end_src
    
    
    
    
    
+   
+
+#+source: message-line
+#+begin_src emacs-lisp
+  (message "Starter Kit User File loaded.")
+#+end_src

@@ -38,32 +38,20 @@ Key Bindings.
   
 #+end_src
 
-#+RESULTS:
-: t
-
 ** Align your code in a pretty way.
 #+begin_src emacs-lisp 
 (global-set-key (kbd "C-x \\") 'align-regexp)
 #+end_src
-
-#+RESULTS:
-: align-regexp
 
 ** Completion that uses many different methods to find options.
 #+begin_src emacs-lisp 
 (global-set-key (kbd "M-/") 'hippie-expand)
 #+end_src
 
-#+RESULTS:
-: hippie-expand
-
 ** Turn on the menu bar for exploring new modes
 #+begin_src emacs-lisp 
 (global-set-key [f1] 'menu-bar-mode)
 #+end_src
-
-#+RESULTS:
-: menu-bar-mode
 
 ** Font size
 #+begin_src emacs-lisp 
@@ -71,51 +59,30 @@ Key Bindings.
 (define-key global-map (kbd "C--") 'text-scale-decrease)
 #+end_src
 
-** Use regex searches by default.
+** Use Regex searches by default, and use Visual Regexp to construct them.
+Building regular expressions in Emacs is kind of a pain.  The visual-regexp pacakge is a very convenient way to dynamically build regular expressions for searching and replacing. You enter a minibuffer that lets you type the regexp and the prospective matches to the expression you type are highlighted in the main buffer. =M-x vr/replace= gives you global replacement and =M-x vr/query-replace= lets you decide to replace per match. Visual regexp replace is bound to =C-c r= and visual =query-replace-regexp= to =C-c q=. 
+
 #+begin_src emacs-lisp 
-(global-set-key (kbd "C-s") 'isearch-forward-regexp)
-(global-set-key (kbd "\C-r") 'isearch-backward-regexp)
-(global-set-key (kbd "C-M-s") 'isearch-forward)
-(global-set-key (kbd "C-M-r") 'isearch-backward)
+  (global-set-key (kbd "C-s") 'isearch-forward-regexp)
+  (global-set-key (kbd "\C-r") 'isearch-backward-regexp)
+  (global-set-key (kbd "C-M-s") 'isearch-forward)
+  (global-set-key (kbd "C-M-r") 'isearch-backward)
+  
+  (require 'visual-regexp)
+  (define-key global-map (kbd "C-c r") 'vr/replace)
+  (define-key global-map (kbd "C-c q") 'vr/query-replace)
 #+end_src
-
-#+RESULTS:
-: isearch-backward
-
-** Convenience Function to search for regexps build with re-builder
-   Re-Builder (=M-x regexp-builder=) is a very convenient way to dynamically build regular expressions for searching and replacing. You enter a minibuffer that lets you type the regexp and the prospective matches to the expression you type are highlighted in the main buffer. In the re-builder minibuffer, =C-c C-w= copies the current expression to the kill-ring (clipboard) and =C-c C-q= quits. The expression is copied as a string, which is useful if you're writing lisp but it will not work if you copy it in to =C-M-%= or =query-replace-regexp=. But usually this is exactly what I want to do---take the expression I've built in re-buider and immediately use it to search and replace in a buffer. With the function below, you can do this. After you've built the expression and copied it wtih =C-c C-w=, quit re-bulder and do =M-x reb-query-replace=. 
-
-#+source: rexep-copy
-#+begin_src emacs-lisp
-  (defun reb-query-replace (to-string)
-      "Replace current RE from point with `query-replace-regexp'."
-      (interactive
-       (progn (barf-if-buffer-read-only)
-              (list (query-replace-read-to (reb-target-binding reb-regexp)
-                                           "Query replace"  t))))
-      (with-current-buffer reb-target-buffer
-        (query-replace-regexp (reb-target-binding reb-regexp) to-string)))
-
-#+end_src
-
-#+RESULTS:
-: reb-query-replace
-
 
 ** File finding
 #+begin_src emacs-lisp 
-(global-set-key (kbd "C-x M-f") 'ido-find-file-other-window)
-(global-set-key (kbd "C-x C-M-f") 'find-file-in-project)
-(global-set-key (kbd "C-x f") 'recentf-ido-find-file)
-(global-set-key (kbd "C-x C-p") 'find-file-at-point)
-(global-set-key (kbd "C-c y") 'bury-buffer)
-(global-set-key (kbd "C-c r") 'revert-buffer)
-(global-set-key (kbd "M-`") 'file-cache-minibuffer-complete)
-(global-set-key (kbd "C-x C-b") 'ibuffer)
+  (global-set-key (kbd "C-x M-f") 'ido-find-file-other-window)
+  (global-set-key (kbd "C-x C-p") 'find-file-at-point)
+  (global-set-key (kbd "C-c y") 'bury-buffer)
+  (global-set-key (kbd "C-c r") 'revert-buffer)
+  (global-set-key (kbd "M-`") 'file-cache-minibuffer-complete)
+  (global-set-key (kbd "C-x C-b") 'ibuffer)
+  (global-set-key (kbd "C-x f") 'recentf-ido-find-file)  
 #+end_src
-
-#+RESULTS:
-: ibuffer
 
 ** Browse the Kill Ring
     Conveniently navigate the kill-ring (ie, the cut/copy clipboard
@@ -126,9 +93,6 @@ Key Bindings.
   (browse-kill-ring-default-keybindings))
 #+end_src
 
-#+RESULTS:
-: yank-pop
-
 ** Window switching.
 =C-x o= goes to the next window, Shift+direction arrow moves between frames.
 #+begin_src emacs-lisp 
@@ -137,9 +101,6 @@ Key Bindings.
 (global-set-key (kbd "C-x C-o") (lambda () (interactive) (other-window 2))) ;; forward two
 (setq windmove-wrap-around t)
 #+end_src
-
-#+RESULTS:
-: t
 
 ** Resizing Windows on the fly
 When your frame (i.e., the main Emacs window) is split into different parts (e.g. using =C-x 2= or =C-x 3=), you sometimes want to resize these parts dynamically. This defines =Shift-C-[arrow keys]= so you can do this easily. 
@@ -153,14 +114,11 @@ When your frame (i.e., the main Emacs window) is split into different parts (e.g
   (global-set-key (kbd "S-C-<up>") 'enlarge-window)  
 #+end_src
 
-#+RESULTS:
-: enlarge-window
-
 ** Rotate Windows in a Frame
 When windows get out of order, you can rotate them.
 
 #+source: rotate-windows
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
    (defun rotate-windows ()
      "Rotate your windows" (interactive) (cond ((not (> (count-windows) 1)) (message "You can't rotate a single window!"))
   (t
@@ -189,13 +147,10 @@ When windows get out of order, you can rotate them.
 (global-set-key (kbd "C-x a") 'join-line)
 #+end_src
 
-#+RESULTS:
-: join-line
-
 ** Mark text between parentheses (a sexp) for selection
  Mark text between parentheses. From [[http://stackoverflow.com/questions/5194417/how-to-mark-the-text-between-the-parentheses-in-emacs][this Stackoverflow answer]]. 
 #+source: backward-up-sexp
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
 (defun backward-up-sexp (arg)
   (interactive "p")
   (let ((ppss (syntax-ppss)))
@@ -212,11 +167,8 @@ When windows get out of order, you can rotate them.
 (global-set-key (kbd "C-x m") 'eshell)
 #+end_src
 
-#+RESULTS:
-: eshell
-
 ** Start a new eshell even if one is active.
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp 
 (global-set-key (kbd "C-x M") (lambda () (interactive) (eshell t)))
 #+end_src
 
@@ -224,9 +176,6 @@ When windows get out of order, you can rotate them.
 #+begin_src emacs-lisp 
 (global-set-key (kbd "C-x M-m") 'shell)
 #+end_src
-
-#+RESULTS:
-: shell
 
 ** Smex replaces M-x
     Smex replaces M-x, and is built on top of ido-mode. See
@@ -246,43 +195,37 @@ When windows get out of order, you can rotate them.
   (smex-auto-update 30)
 #+end_src
 
-#+RESULTS:
-: [nil 0 30 0 t (lambda nil (if (smex-detect-new-commands) (smex-update))) nil idle 0]
-
 ** If you want to be able to M-x without meta
-#+begin_src emacs-lisp :tangle no 
+#+begin_src emacs-lisp 
 (global-set-key (kbd "C-x C-m") 'smex)
 #+end_src
     
 ** Use Option as Meta key
 
 #+source: option-is-meta
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp 
   (setq mac-option-modifier 'meta)    
 #+end_src
 
 ** Use Command-Z as undo
 Use a little bit of Mac keys, but not all of them.
 #+source: mackeys1
-#+begin_src emacs-lisp
-;(require 'redo+) causes major problems 
-(setq mac-command-modifier 'alt mac-option-modifier 'meta)
-(global-set-key [(alt a)] 'mark-whole-buffer)
-(global-set-key [(alt v)] 'yank)
-(global-set-key [(alt c)] 'kill-ring-save)
-(global-set-key [(alt x)] 'kill-region)
-(global-set-key [(alt s)] 'save-buffer)
-(global-set-key [(alt f)] 'isearch-forward)
-(global-set-key [(alt g)] 'isearch-repeat-forward)
-(global-set-key [(alt z)] 'undo)
+#+begin_src emacs-lisp 
+  (global-set-key [(meta z)] 'undo)
+  ;; (require 'redo+) 
+  ;;(global-set-key [(alt a)] 'mark-whole-buffer)
+  ;;(global-set-key [(alt v)] 'yank)
+  ;; (global-set-key [(alt c)] 'kill-ring-save)
+  ;;(global-set-key [(alt x)] 'kill-region)
+  ;;(global-set-key [(alt s)] 'save-buffer)
+  ;;(global-set-key [(alt f)] 'isearch-forward)
+  ;;(global-set-key [(alt g)] 'isearch-repeat-forward)
+  ;; (global-set-key [(alt z)] 'undo)
+    
 #+end_src
 
-#+RESULTS:
-: undo
-
-
 ** Fetch the contents at a URL, display it raw.
-#+begin_src emacs-lisp :tangle no 
+#+begin_src emacs-lisp 
 (global-set-key (kbd "C-x h") 'view-url)
 #+end_src
 
@@ -291,16 +234,10 @@ Use a little bit of Mac keys, but not all of them.
 (global-set-key (kbd "C-h a") 'apropos)
 #+end_src
 
-#+RESULTS:
-: apropos
-
 ** Should be able to eval-and-replace anywhere.
 #+begin_src emacs-lisp 
 (global-set-key (kbd "C-c e") 'eval-and-replace)
 #+end_src
-
-#+RESULTS:
-: eval-and-replace
 
 ** Applications
 #+begin_src emacs-lisp 
@@ -314,9 +251,6 @@ Use a little bit of Mac keys, but not all of them.
   (global-set-key (kbd "C-x g") 'magit-status)
 #+end_src
 
-#+RESULTS:
-: magit-status
-
 ** Activate occur easily inside isearch
 #+begin_src emacs-lisp 
 (define-key isearch-mode-map (kbd "C-o")
@@ -325,22 +259,15 @@ Use a little bit of Mac keys, but not all of them.
       (occur (if isearch-regexp isearch-string (regexp-quote isearch-string))))))
 #+end_src
 
-#+RESULTS:
-| lambda | nil | (interactive) | (let ((case-fold-search isearch-case-fold-search)) (occur (if isearch-regexp isearch-string (regexp-quote isearch-string)))) |
-
 ** Org-mode
 A global binding for Org-mode (see [[file:starter-kit-org.org][starter-kit-org]])
 
 Org-mode supports [[http://orgmode.org/manual/Hyperlinks.html#Hyperlinks][links]], this command allows you to store links
 globally for later insertion into an Org-mode buffer.  See
 [[http://orgmode.org/manual/Handling-links.html#Handling-links][Handling-links]] in the Org-mode manual.
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
 (define-key global-map "\C-cl" 'org-store-link)
 #+end_src
-
-#+RESULTS:
-: org-store-link
-
 ** Magit
 It's to the point now where I almost can't use git without magit.
 - [[http://zagadka.vm.bytemark.co.uk/magit/][Homepage]]
@@ -351,9 +278,6 @@ It's to the point now where I almost can't use git without magit.
   (define-key global-map "\M-\C-g" 'magit-status)
 #+end_src
 
-#+RESULTS:
-: magit-status
-
 #+resname:
 : magit-status
 
@@ -362,18 +286,15 @@ Rgrep is infinitely useful in multi-file projects.
 
 (see [[elisp:(describe-function 'rgrep)]])
 
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
   (define-key global-map "\C-x\C-r" 'rgrep)
 #+end_src
-
-#+RESULTS:
-: rgrep
 
 ** Interface with Ack
 Ack is "better than grep" and written in Perl. 
 
 #+source: ack
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
   (require 'ack-and-a-half)
   ;; Create shorter aliases
   (defalias 'ack 'ack-and-a-half)
@@ -383,12 +304,11 @@ Ack is "better than grep" and written in Perl.
   (define-key global-map "\C-x\C-a" 'ack) 
 #+end_src
 
-
 ** Winner mode
-Remember the previous window configurations and jump back to them
-as needed (as when, e.g., some other mode messes with your working
-layout.) Rebind the default keys to C-c-up and C-c-down as in a moment 
-we'll assign C-c-right for rotating windows.
+    Remember the previous window configurations and jump back to them
+    as needed (as when, e.g., some other mode messes with your working
+    layout.) Rebind the default keys to C-c-up and C-c-down as in a moment 
+    we'll assign C-c-right for rotating windows.
 
 #+source: local-winner-mode
 #+begin_src emacs-lisp
@@ -475,7 +395,7 @@ Sometimes very useful (but we don't use the core cua keys.)
 #+end_src
 
 ** Expand Region
-Expand selected region by semantic units. Just keep pressing the key until it selects what you want.
+   Expand selected region by semantic units. Just keep pressing the key until it selects what you want.
 #+source: expand-region
 #+begin_src emacs-lisp
     (require 'expand-region)
@@ -483,20 +403,20 @@ Expand selected region by semantic units. Just keep pressing the key until it se
 #+end_src
 
 ** Multiple Cursors
-Use multiple cursors for search, replace, and text-cleaning tasks. For a demonstration, see http://emacsrocks.com/e13.html
+   Use multiple cursors for search, replace, and text-cleaning tasks. For a demonstration, see http://emacsrocks.com/e13.html
 #+source: multiple-cursors
 #+begin_src emacs-lisp
   (require 'multiple-cursors)
   ;; When you have an active region that spans multiple lines, the following will add a cursor to each line:
-  ;;(global-set-key (kbd "C-S-c C-S-c") 'mc/edit-lines)
+  (global-set-key (kbd "C-S-c C-S-c") 'mc/edit-lines)
   
-  ;;(global-set-key (kbd "C-S-c C-e") 'mc/edit-ends-of-lines)
-  ;;(global-set-key (kbd "C-S-c C-a") 'mc/edit-beginnings-of-lines)
+  (global-set-key (kbd "C-S-c C-e") 'mc/edit-ends-of-lines)
+  (global-set-key (kbd "C-S-c C-a") 'mc/edit-beginnings-of-lines)
   
   ;; When you want to add multiple cursors not based on continuous lines, but based on keywords in the buffer, use:
-  ;;(global-set-key (kbd "C->") 'mc/mark-next-like-this)
-  ;;(global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
-  ;;(global-set-key (kbd "C-c C-<") 'mc/mark-all-like-this)
+  (global-set-key (kbd "C->") 'mc/mark-next-like-this)
+  (global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
+  (global-set-key (kbd "C-c C-<") 'mc/mark-all-like-this)
   
   ;; Rectangular region mode
   (global-set-key (kbd "H-SPC") 'set-rectangular-region-anchor)
@@ -512,21 +432,22 @@ Use multiple cursors for search, replace, and text-cleaning tasks. For a demonst
 First mark the word, then add more cursors. To get out of multiple-cursors-mode, press <return> or C-g. The latter will first disable multiple regions before disabling multiple cursors. If you want to insert a newline in multiple-cursors-mode, use C-j.
 
 ** Minimal mode
-A nice clutter-free appearance with a reduced-size modeline, no
-scroll bars, and no fringe indicators. Useful in conjunction with running Emacs full-screen.
+   A nice clutter-free appearance with a reduced-size modeline, no
+   scroll bars, and no fringe indicators. Useful in conjunction with running Emacs full-screen.
 #+source: minimal-mode
 #+begin_src emacs-lisp
   (require 'minimal)
-  (minimal-mode 1)
   (global-set-key (kbd "C-c s") 'minimal-mode)
 #+end_src
-
-#+RESULTS:
-: minimal-mode
 
 ** Closing
 #+begin_src emacs-lisp 
 (provide 'starter-kit-bindings)
 ;;; starter-kit-bindings.el ends here
+#+end_src
+
+#+source: message-line
+#+begin_src emacs-lisp
+  (message "Starter Kit Bindings loaded.")
 #+end_src
   

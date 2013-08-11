@@ -9,30 +9,19 @@ This is part of the [[file:starter-kit.org][Emacs Starter Kit]].
 ** Load Packages
 *** Load AucTeX
 #+begin_src emacs-lisp :tangle no
-  (load "auctex-autoloads.el" nil t t)
+  (load "auctex-pkg.el" nil t t)
 #+end_src
 
-#+RESULTS:
-: t
-
-    
-*** Load Preview LaTeX :tangle no
+*** Load Preview LaTeX
 #+begin_src emacs-lisp :tangle no
   (load "preview.el" nil t t)
 #+end_src
-
-#+RESULTS:
-: t
 
 *** Prettify Math in Buffers
 #+source: latex-pretty-symbols 
 #+begin_src emacs-lisp :tangle no
   (require 'latex-pretty-symbols)
 #+end_src
-
-#+RESULTS:
-: latex-pretty-symbols
-
 
 *** Load RefTeX
 #+srcname: reftex-support
@@ -93,9 +82,6 @@ This is part of the [[file:starter-kit.org][Emacs Starter Kit]].
   
 #+end_src
 
-#+RESULTS:
-: t
-
 *** Load ebib
     ebib is a bibtex database manager that works inside emacs. It can
     talk to org-mode. See [[http://ebib.sourceforge.net/][the ebib project page]] for more. When Ebib is
@@ -110,9 +96,6 @@ This is part of the [[file:starter-kit.org][Emacs Starter Kit]].
           (local-set-key "\C-cb" 'ebib-insert-bibtex-key)))
 #+end_src
 
-#+RESULTS:
-
-    
 ** Configure AucTeX 
 *** Use pdfLaTeX
     - Take this out to compile to DVI, instead.
@@ -120,7 +103,7 @@ This is part of the [[file:starter-kit.org][Emacs Starter Kit]].
 #+begin_src emacs-lisp 
       (add-hook 'LaTeX-mode-hook 'TeX-PDF-mode)
 #+end_src
-    
+
 *** Configure Biber
 Allow AucTeX to use biber as well as/instead of bibtex.
 #+source: setup-biber
@@ -160,26 +143,20 @@ Allow AucTeX to use biber as well as/instead of bibtex.
 
 #+end_src
 
-#+RESULTS:
-| Biber         | biber %s                               | TeX-run-Biber               | nil | t                                          | :help | Run Biber                                      |          |                   |
-| TeX           | %(PDF)%(tex) %`%S%(PDFout)%(mode)%' %t | TeX-run-TeX                 | nil | (plain-tex-mode ams-tex-mode texinfo-mode) | :help | Run plain TeX                                  |          |                   |
-| LaTeX         | %`%l%(mode)%' %t                       | TeX-run-TeX                 | nil | (latex-mode doctex-mode)                   | :help | Run LaTeX                                      |          |                   |
-| Makeinfo      | makeinfo %t                            | TeX-run-compile             | nil | (texinfo-mode)                             | :help | Run Makeinfo with Info output                  |          |                   |
-| Makeinfo HTML | makeinfo --html %t                     | TeX-run-compile             | nil | (texinfo-mode)                             | :help | Run Makeinfo with HTML output                  |          |                   |
-| AmSTeX        | %(PDF)amstex %`%S%(PDFout)%(mode)%' %t | TeX-run-TeX                 | nil | (ams-tex-mode)                             | :help | Run AMSTeX                                     |          |                   |
-| ConTeXt       | texexec --once --texutil %(execopts)%t | TeX-run-TeX                 | nil | (context-mode)                             | :help | Run ConTeXt once                               |          |                   |
-| ConTeXt Full  | texexec %(execopts)%t                  | TeX-run-TeX                 | nil | (context-mode)                             | :help | Run ConTeXt until completion                   |          |                   |
-| BibTeX        | bibtex %s                              | TeX-run-BibTeX              | nil | t                                          | :help | Run BibTeX                                     |          |                   |
-| View          | %V                                     | TeX-run-discard-or-function | t   | t                                          | :help | Run Viewer                                     |          |                   |
-| Print         | %p                                     | TeX-run-command             | t   | t                                          | :help | Print the file                                 |          |                   |
-| Queue         | %q                                     | TeX-run-background          | nil | t                                          | :help | View the printer queue                         | :visible | TeX-queue-command |
-| File          | %(o?)dvips %d -o %f                    | TeX-run-command             | t   | t                                          | :help | Generate PostScript file                       |          |                   |
-| Index         | makeindex %s                           | TeX-run-command             | nil | t                                          | :help | Create index file                              |          |                   |
-| Check         | lacheck %s                             | TeX-run-compile             | nil | (latex-mode)                               | :help | Check LaTeX file for correctness               |          |                   |
-| Spell         | (TeX-ispell-document "")               | TeX-run-function            | nil | t                                          | :help | Spell-check the document                       |          |                   |
-| Clean         | TeX-clean                              | TeX-run-function            | nil | t                                          | :help | Delete generated intermediate files            |          |                   |
-| Clean All     | (TeX-clean t)                          | TeX-run-function            | nil | t                                          | :help | Delete generated intermediate and output files |          |                   |
-| Other         |                                        | TeX-run-command             | t   | t                                          | :help | Run an arbitrary command                       |          |                   |
+*** Use Biblatex key template by default in bib files
+#+source: bibtex-dialect
+#+begin_src emacs-lisp :tangle no
+  (setq bibtex-dialect "BibTeX")
+#+end_src
+
+*** Use '-' as the separator in auto-generated bibtex keys
+We use this (rather than the underscore character) for compatibilty with Pandoc.
+
+#+source: bibtex-key-separator
+#+begin_src emacs-lisp :tangle no
+  (setq bibtex-autokey-titleword-separator "_")
+  (setq bibtex-autokey-year-title-separator ":_")
+#+end_src
 
 *** Use latexmk for compilation by default
 
@@ -195,23 +172,16 @@ Allow AucTeX to use biber as well as/instead of bibtex.
   (add-hook 'TeX-mode-hook '(lambda () (setq TeX-command-default "latexmk")))  
 #+end_src
 
-#+RESULTS:
-| lambda | nil | (setq TeX-command-default latexmk) |
-| lambda | nil | (outline-minor-mode 1)             |
-
-*** Set a Path to Executables (now turned on)
+*** Set a Path to Executables (optional)
     - The location of the LaTeX excecutables is system
       dependent. AUCTeX calls everything through a shell, so you may
       or may not need this.  This source-code block is turned off by
       default as it should be added to the user's personal
       configuration as needed.
 #+srcname: set-exec-path
-#+begin_src emacs-lisp 
+#+begin_src emacs-lisp :tangle no
       (setenv "PATH" (concat "/usr/texbin:" (getenv "PATH")))
 #+end_src
-
-#+RESULTS:
-: /usr/texbin:/usr/local/bin:/usr/local/bin:/Users/mgualt/.rvm/gems/ruby-1.9.2-p320/bin:/Users/mgualt/.rvm/gems/ruby-1.9.2-p320@global/bin:/Users/mgualt/.rvm/rubies/ruby-1.9.2-p320/bin:/Users/mgualt/.rvm/bin:/usr/local/Cellar/gettext/0.18.1.1/include:/usr/gcc-4.7.1/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/opt/X11/bin:/usr/X11/bin:/usr/texbin:/Users/mgualt/.rvm/gems/ruby-1.9.2-p320/bin:/Users/mgualt/.rvm/gems/ruby-1.9.2-p320@global/bin:/Users/mgualt/.rvm/rubies/ruby-1.9.2-p320/bin:/Users/mgualt/.rvm/bin:/usr/local/Cellar/gettext/0.18.1.1/include:/usr/gcc-4.7.1/bin
 
 ** Configure RefTeX
 *** Default Bibliography
@@ -247,6 +217,8 @@ Allow AucTeX to use biber as well as/instead of bibtex.
   (add-to-list 'org-babel-noweb-error-langs "latex")
 #+end_src
 
-#+RESULTS:
-| latex |
 
+#+source: message-line
+#+begin_src emacs-lisp
+  (message "Starter Kit LaTeX loaded.")
+#+end_src
