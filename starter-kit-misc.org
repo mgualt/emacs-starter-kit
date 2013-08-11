@@ -28,7 +28,7 @@ loading the =zenburn= and =anti-zenburn= themes.
 #+begin_src emacs-lisp
   (add-to-list 'custom-theme-load-path "~/.emacs.d/elpa")
   (setq custom-safe-themes t)
-  (load-theme 'zenburn t)
+  (load-theme 'solarized-dark t)
 #+end_src
 
 ** Window system 
@@ -92,7 +92,7 @@ Set this to whatever browser you use e.g...
 
 ** Enable syntax highlighting 
 #+begin_src emacs-lisp
-(global-font-lock-mode t)
+  (global-font-lock-mode t)
 #+end_src
 
 ** Show Menu Bar in Window but not in tty
@@ -153,7 +153,7 @@ ido-mode is like magic pixie dust!
 ** Powerline provides a nicer modeline
 A nicer modeline. 
 #+source: powerline-load
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (require 'powerline)
   (powerline-default-theme)
 
@@ -185,8 +185,6 @@ A nicer modeline.
 #+begin_src emacs-lisp
 (setq diff-switches "-u")
 #+end_src
-
-
 
 #+source: message-line
 #+begin_src emacs-lisp

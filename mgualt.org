@@ -120,7 +120,7 @@ For use with Yamamoto Mitsuharu's Carbon-patched Emacs. (This is
     what I use, but it requires you compile a custom version of Emacs provided by Mitsuharu.)
 
 #+source: fullscreen-4
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp 
     (defun fullscreen (&optional f)
       (interactive)
       (set-frame-parameter f 'fullscreen
@@ -204,7 +204,7 @@ In dired mode, visit all marked files using. Bound to the "F" key.
 Set up AUCTeX to work with the Skim PDF viewer.
 
 #+srcname: sync
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
     ;; Synctex with Skim
     (add-hook 'TeX-mode-hook
     (lambda ()
@@ -217,7 +217,7 @@ Set up AUCTeX to work with the Skim PDF viewer.
   (setq TeX-view-program-list
        '(("PDF Viewer" "/Applications/Skim.app/Contents/SharedSupport/displayline -b -g %n %o %b")))
      
-    ;; Make emacs aware of multi-file projects
+  ;; Make emacs aware of multi-file projects
     ;; (setq-default TeX-master nil)
     
     ;; Auto-raise Emacs on activation (from Skim, usually)
@@ -308,10 +308,14 @@ A pandoc menu for markdown and tex files.
 #+end_src
 
 ** Local Polymode Support
-Polymode is a new package that supports multiple modes inside a single buffer. It is aimed particularly at literate programming approaches and supports, e.g., R and markdown in a single =.Rmd= file. So it is very useful with knitr in R, given that ESS does not yet fully support =.Rmd= files.
+Polymode is a new package that supports multiple modes inside a single
+buffer. It is aimed particularly at literate programming approaches
+and supports, e.g., R and markdown in a single =.Rmd= file. So it is
+very useful with knitr in R, given that ESS does not yet fully support
+=.Rmd= files.
 
 #+source: Polymode
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (require 'poly-R)
   (require 'poly-markdown)
 #+end_src
@@ -604,34 +608,63 @@ Some last tweaks.
 
 #+srcname: final-custom
 #+begin_src emacs-lisp
-    ;; Line-spacing tweak (Optimized for PragmataPro)
-    (setq-default line-spacing 2)
+  ;; Line-spacing tweak (Optimized for PragmataPro)
+  (setq-default line-spacing 2)
+  (minimal-mode 1)
+  ;; scroll one line at a time (less "jumpy" than defaults)
+    (setq mouse-wheel-scroll-amount '(1 ((shift) . 1))) ;; one line at a time
+    (setq mouse-wheel-progressive-speed nil) ;; don't accelerate scrolling
+    (setq mouse-wheel-follow-mouse 't) ;; scroll window under mouse
+    (setq scroll-step 1) ;; keyboard scroll one line at a time
+  
+  ;; minimize fringe
+  (setq-default indicate-empty-lines nil)
+  
+  ;; Add keybindings for commenting regions of text
+  (global-set-key (kbd "C-c ;") 'comment-or-uncomment-region)
+  ;;(global-set-key (kbd "M-'") 'comment-or-uncomment-region)
+  
+  ;; Base dir
+  (cd "~/")
+  
+  ;; custom variables kludge. Why can't I get these to work via setq?
+  (custom-set-variables
+  ;; custom-set-variables was added by Custom.
+  ;; If you edit it by hand, you could mess it up, so be careful.
+  ;; Your init file should contain only one such instance.
+  ;; If there is more than one, they won't work right.
+  '(LaTeX-XeTeX-command "xelatex -synctex=1")
+  '(TeX-engine (quote xetex))
+  
+  ;; '(TeX-view-program-list (quote (("Skim" "/Applications/Skim.app/Contents/SharedSupport/displayline %n %o %b"))))
+  ;; '(TeX-view-program-selection (quote (((output-dvi style-pstricks) "dvips and gv") (output-dvi "xdvi") (output-pdf "Skim") (output-html "xdg-open"))))
+  '(show-paren-mode t)
+  '(blink-cursor-mode nil)
+  '(text-mode-hook (quote (text-mode-hook-identify)))
+  )
+  ;; make latexmk available via C-c C-c
+  ;; Note: SyncTeX is setup via ~/.latexmkrc (see below)
+  (add-hook 'LaTeX-mode-hook (lambda ()
+    (push
+     '("latexmk" "latexmk -pdf %O %S" TeX-run-TeX nil t
+       :help "Run latexmk on file")
+     TeX-command-list)))
+  
+  (add-hook 'TeX-mode-hook '(lambda () (setq TeX-command-default "latexmk")))
     
-    ;; minimize fringe
-    (setq-default indicate-empty-lines nil)
+  ;; use Skim as default pdf viewer
+  ;; Skim's displayline is used for forward search (from .tex to .pdf)
+  ;; option -b highlights the current line; option -g opens Skim in the background  
+  (setq TeX-view-program-selection '((output-pdf "PDF Viewer")))
+  (setq TeX-view-program-list
+        '(("PDF Viewer" "/Applications/Skim.app/Contents/SharedSupport/displayline -b -g %n %o %b")))
     
-    ;; Add keybindings for commenting regions of text
-    (global-set-key (kbd "C-c ;") 'comment-or-uncomment-region)
-    ;;(global-set-key (kbd "M-'") 'comment-or-uncomment-region)
-    
-    ;; Base dir
-    (cd "~/")
-    
-    ;; custom variables kludge. Why can't I get these to work via setq?
-    (custom-set-variables
-    ;; custom-set-variables was added by Custom.
-    ;; If you edit it by hand, you could mess it up, so be careful.
-    ;; Your init file should contain only one such instance.
-    ;; If there is more than one, they won't work right.
-    '(LaTeX-XeTeX-command "xelatex -synctex=1")
-    '(TeX-engine (quote xetex))
-    ;; '(TeX-view-program-list (quote (("Skim" "/Applications/Skim.app/Contents/SharedSupport/displayline %n %o %b"))))
-    ;; '(TeX-view-program-selection (quote (((output-dvi style-pstricks) "dvips and gv") (output-dvi "xdvi") (output-pdf "Skim") (output-html "xdg-open"))))
-    '(show-paren-mode t)
-    '(blink-cursor-mode nil)
-    '(text-mode-hook (quote (text-mode-hook-identify)))
-    )
+  ;; not needed since happens in init.el
+  ;; (server-start); start emacs in server mode so that skim can talk to it
 #+end_src
+
+#+RESULTS:
+
    
    
    
