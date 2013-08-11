@@ -14,7 +14,7 @@
                          "lisp" (expand-file-name
                                  "org" (expand-file-name
                                         "src" dotfiles-dir))))
-
+(add-to-list 'load-path "~/.emacs.d/src/org-mode/lisp")
 ;; Common Lisp compatability
 (require 'cl-lib)
 
