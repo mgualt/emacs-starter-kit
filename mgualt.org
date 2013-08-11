@@ -54,7 +54,7 @@ Is this necessary? it seems so.
 #+end_src
 
 #+RESULTS:
-: /usr/local/bin:/usr/local/bin:/usr/local/bin:/usr/local/bin:/usr/local/bin:/usr/local/bin:/usr/local/bin:/usr/local/bin:/usr/local/bin:/usr/local/bin:/usr/local/bin:/usr/local/bin:/usr/local/bin:/usr/local/bin:/usr/local/bin:/usr/local/bin:/usr/local/bin:/usr/local/bin:/usr/local/bin:/usr/local/bin:/usr/local/bin:/usr/texbin:/Users/mgualt/.rvm/gems/ruby-1.9.2-p320/bin:/Users/mgualt/.rvm/gems/ruby-1.9.2-p320@global/bin:/Users/mgualt/.rvm/rubies/ruby-1.9.2-p320/bin:/Users/mgualt/.rvm/bin:/usr/local/Cellar/gettext/0.18.1.1/include:/usr/gcc-4.7.1/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/opt/X11/bin:/usr/X11/bin:/usr/texbin
+: /usr/local/bin:/usr/local/bin:/usr/texbin:/Users/mgualt/.rvm/gems/ruby-1.9.2-p320/bin:/Users/mgualt/.rvm/gems/ruby-1.9.2-p320@global/bin:/Users/mgualt/.rvm/rubies/ruby-1.9.2-p320/bin:/Users/mgualt/.rvm/bin:/usr/local/Cellar/gettext/0.18.1.1/include:/usr/gcc-4.7.1/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/opt/X11/bin:/usr/X11/bin:/usr/texbin
 
 *** Color Theme and Line Highlighting
 The theme package is loaded in =starter-kit-misc.org=. The settings
@@ -409,7 +409,7 @@ remove some of these settings depending on your preferences and local
 configuration.
 
 #+source: orgmode-xelatex-export
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
     (require 'org-latex)   
     ;; Choose either listings or minted for exporting source code blocks.
     ;; Using minted (as here) requires pygments be installed. To use the
@@ -492,7 +492,7 @@ configuration.
     ebib is a bibtex database manager that works inside emacs. It can
     talk to org-mode. See [[http://orgmode.org/worg/org-tutorials/org-latex-export.html#sec-17_2][this Worg tutorial]] for details. 
 #+source: ebib-setup
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
     (org-add-link-type "ebib" 'ebib)
   
    (org-add-link-type 

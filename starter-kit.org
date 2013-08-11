@@ -270,7 +270,7 @@ since they are likely to be used in every session
 #+end_src
 
 #+RESULTS:
-| lambda | (file) | This function is to be used to load starter-kit-*.org files. | (org-babel-load-file (expand-file-name file dotfiles-dir)) |
+: starter-kit-load
 
 #+source: starter-kit-compile
 #+begin_src emacs-lisp
@@ -301,6 +301,7 @@ since they are likely to be used in every session
 
 #+RESULTS:
 | lambda | (&optional arg) | Tangle and Byte compile all starter-kit files. | (interactive P) | (cl-flet ((age (file) (float-time (time-subtract (current-time) (nth 5 (or (file-attributes (file-truename file)) (file-attributes file))))))) (mapc (lambda (file) (when (string= org (file-name-extension file)) (let ((el-file (concat (file-name-sans-extension file) .el))) (when (or arg (not (and (file-exists-p el-file) (> (age file) (age el-file))))) (org-babel-tangle-file file el-file emacs-lisp) (byte-compile-file el-file))))) (apply (function append) (mapcar (lambda (d) (when (and (file-exists-p d) (file-directory-p d)) (mapcar (lambda (f) (expand-file-name f d)) (directory-files d)))) (list (concat dotfiles-dir user-login-name) dotfiles-dir))))) |
+|        |                 |                                                |                 |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 
 *** Starter Kit aspell (Spell checking with flyspell)
 aspell workaround in [[file:starter-kit-aspell.org][starter-kit-aspell]]
@@ -313,49 +314,52 @@ Load up [[http://tromey.com/elpa/][ELPA]], the Emacs Lisp package manager.
 
 #+srcname: starter-kit-elpa
 #+begin_src emacs-lisp 
-  (require 'package)
-  (setq package-archives
-        '(("gnu"         . "http://elpa.gnu.org/packages/")
-          ("org"         . "http://orgmode.org/elpa/")
-          ("melpa"   . "http://melpa.milkbox.net/packages/")
-          ("marmalade" . "http://marmalade-repo.org/packages/")))
-
-;;; Add support to package.el for pre-filtering available packages
-(defvar package-filter-function nil
-  "Optional predicate function used to internally filter packages used by package.el.
-
-The function is called with the arguments PACKAGE VERSION ARCHIVE, where
-PACKAGE is a symbol, VERSION is a vector as produced by `version-to-list', and
-ARCHIVE is the string name of the package archive.")
-
-(defadvice package--add-to-archive-contents
-  (around filter-packages (package archive) activate)
-  "Add filtering of available packages using `package-filter-function', if non-nil."
-  (when (or (null package-filter-function)
-            (funcall package-filter-function
-                     (car package)
-                     (package-desc-vers (cdr package))
-                     archive))
-    ad-do-it))
-
-(defvar melpa-exclude-packages
-  '(slime)
-  "Don't install Melpa versions of these packages.")
-
-;; Don't take Melpa versions of certain packages
-(setq package-filter-function
-      (lambda (package version archive)
-        (and
-         (not (memq package '(eieio)))
-         (or (not (string-equal archive "melpa"))
-             (not (memq package melpa-exclude-packages))))))
-
-  (package-initialize)
-  (starter-kit-load "starter-kit-elpa.org")
+    (require 'package)
+    (setq package-archives
+          '(("org"         . "http://orgmode.org/elpa/")
+            ("gnu"         . "http://elpa.gnu.org/packages/")
+            ("melpa"   . "http://melpa.milkbox.net/packages/")
+            ("marmalade" . "http://marmalade-repo.org/packages/")))
+  
+  ;;; Add support to package.el for pre-filtering available packages
+  (defvar package-filter-function nil
+    "Optional predicate function used to internally filter packages used by package.el.
+  
+  The function is called with the arguments PACKAGE VERSION ARCHIVE, where
+  PACKAGE is a symbol, VERSION is a vector as produced by `version-to-list', and
+  ARCHIVE is the string name of the package archive.")
+  
+  (defadvice package--add-to-archive-contents
+    (around filter-packages (package archive) activate)
+    "Add filtering of available packages using `package-filter-function', if non-nil."
+    (when (or (null package-filter-function)
+                (funcall package-filter-function
+                   (car package)
+                   (funcall (if (fboundp 'package-desc-version)
+                    'package--ac-desc-version
+                  'package-desc-vers)
+                      (cdr package))
+                   archive))
+      ad-do-it))
+  
+  (defvar melpa-exclude-packages
+    '(slime)
+    "Don't install Melpa versions of these packages.")
+  
+  ;; Don't take Melpa versions of certain packages
+  (setq package-filter-function
+        (lambda (package version archive)
+          (and
+           (not (memq package '(eieio)))
+           (or (not (string-equal archive "melpa"))
+               (not (memq package melpa-exclude-packages))))))
+  
+    (package-initialize)
+    (starter-kit-load "starter-kit-elpa.org")
 #+end_src
 
 #+RESULTS:
-: loaded /Users/mgualt/.emacs.d/starter-kit-elpa.el
+: Loaded /Users/mgualt/.emacs.d/starter-kit-elpa.el
 
 #+results: starter-kit-elpa
 : loaded starter-kit-elpa.el
@@ -368,6 +372,9 @@ Work around a bug on OS X where system-name is FQDN
   (if (eq system-type 'darwin)
       (setq system-name (car (split-string system-name "\\."))))
 #+end_src
+
+#+RESULTS:
+: mgualt-168
 
 *** System/User specific customizations
 
@@ -385,6 +392,9 @@ in this document).
   (add-to-list 'load-path user-specific-dir)
 #+end_src
 
+#+RESULTS:
+| /Users/mgualt/.emacs.d/mgualt | /Users/mgualt/.emacs.d/elpa/tango-2-theme-20120312.1325 | /Users/mgualt/.emacs.d/elpa/tango-2-theme-20120312.1325 | /Users/mgualt/.emacs.d/ | ~/.emacs.d/ | /Users/mgualt/.emacs.d/elpa/ack-and-a-half-20130204.1838 | /Users/mgualt/.emacs.d/elpa/auctex-11.86/ | /Users/mgualt/.emacs.d/elpa/auctex-11.86 | /Users/mgualt/.emacs.d/elpa/autopair-0.3 | /Users/mgualt/.emacs.d/elpa/browse-kill-ring-1.3.1 | /Users/mgualt/.emacs.d/elpa/cdlatex-4.0 | /Users/mgualt/.emacs.d/elpa/creole-0.8.12 | /Users/mgualt/.emacs.d/elpa/ess-20130711.2359/lisp/ | /Users/mgualt/.emacs.d/elpa/ess-20130711.2359 | /Users/mgualt/.emacs.d/elpa/exec-path-from-shell-20130806.925 | /Users/mgualt/.emacs.d/elpa/expand-region-20130710.1104 | /Users/mgualt/.emacs.d/elpa/fakir-0.0.10 | /Users/mgualt/.emacs.d/elpa/gist-1.0.1 | /Users/mgualt/.emacs.d/elpa/gh-0.5.3 | /Users/mgualt/.emacs.d/elpa/logito-0.1 | /Users/mgualt/.emacs.d/elpa/pcache-20120408.1206 | /Users/mgualt/.emacs.d/elpa/haskell-mode-2.8.0/ | /Users/mgualt/.emacs.d/elpa/haskell-mode-2.8.0 | /Users/mgualt/.emacs.d/elpa/highline-7.2.2 | /Users/mgualt/.emacs.d/elpa/hl-line+-20130723.2210 | /Users/mgualt/.emacs.d/elpa/htmlize-20130207.2102 | /Users/mgualt/.emacs.d/elpa/idle-highlight-1.0 | /Users/mgualt/.emacs.d/elpa/inf-ruby-2.2.3 | /Users/mgualt/.emacs.d/elpa/ipython-2927 | /Users/mgualt/.emacs.d/elpa/jedi-20130714.1415 | /Users/mgualt/.emacs.d/elpa/auto-complete-20130724.1750 | /Users/mgualt/.emacs.d/elpa/popup-20130324.1305 | /Users/mgualt/.emacs.d/elpa/epc-20130804.1428 | /Users/mgualt/.emacs.d/elpa/ctable-20130706.1939 | /Users/mgualt/.emacs.d/elpa/concurrent-20120306.1807 | /Users/mgualt/.emacs.d/elpa/deferred-20130523.1007 | /Users/mgualt/.emacs.d/elpa/js2-mode-20090814 | /Users/mgualt/.emacs.d/elpa/latex-pretty-symbols-20111011.1446 | /Users/mgualt/.emacs.d/elpa/logito-0.1 | /Users/mgualt/.emacs.d/elpa/mac-key-mode-2010.1.3 | /Users/mgualt/.emacs.d/elpa/magit-1.1.1 | /Users/mgualt/.emacs.d/elpa/markdown-mode-1.8.1 | /Users/mgualt/.emacs.d/elpa/maxframe-0.5.1 | /Users/mgualt/.emacs.d/elpa/move-text-20130506.1826 | /Users/mgualt/.emacs.d/elpa/multiple-cursors-1.2.1 | /Users/mgualt/.emacs.d/elpa/org-20130805 | /Users/mgualt/.emacs.d/elpa/pandoc-mode-20130619.331 | /Users/mgualt/.emacs.d/elpa/paredit-20130722.1324 | /Users/mgualt/.emacs.d/elpa/pcache-20120408.1206 | /Users/mgualt/.emacs.d/elpa/popup-20130324.1305 | /Users/mgualt/.emacs.d/elpa/python-20120402 | /Users/mgualt/.emacs.d/elpa/r-autoyas-0.28 | /Users/mgualt/.emacs.d/elpa/redo+-20130424.155 | /Users/mgualt/.emacs.d/elpa/s-20130617.1851 | /Users/mgualt/.emacs.d/elpa/smex-20130707.1255 | /Users/mgualt/.emacs.d/elpa/solarized-theme-20130804.1649 | /Users/mgualt/.emacs.d/elpa/textmate-20110816.1446 | /Users/mgualt/.emacs.d/elpa/typopunct-1.0 | /Users/mgualt/.emacs.d/elpa/visual-regexp-20130527.1820 | /Users/mgualt/.emacs.d/elpa/web-20130429.1926 | /Users/mgualt/.emacs.d/elpa/yaml-mode-20130311.1301 | /Users/mgualt/.emacs.d/elpa/yasnippet-20130722.1832 | /Users/mgualt/.emacs.d/elpa/yasnippet-bundle-0.6.1 | /Users/mgualt/.emacs.d/elpa/zenburn-theme-20130716.1457 | ~/.emacs.d/ | /Users/mgualt/.emacs.d/src/org/lisp | /usr/local/share/emacs/site-lisp | /usr/local/Cellar/emacs/HEAD/share/emacs/24.3.50/lisp | /usr/local/Cellar/emacs/HEAD/share/emacs/24.3.50/lisp/vc | /usr/local/Cellar/emacs/HEAD/share/emacs/24.3.50/lisp/url | /usr/local/Cellar/emacs/HEAD/share/emacs/24.3.50/lisp/textmodes | /usr/local/Cellar/emacs/HEAD/share/emacs/24.3.50/lisp/progmodes | /usr/local/Cellar/emacs/HEAD/share/emacs/24.3.50/lisp/play | /usr/local/Cellar/emacs/HEAD/share/emacs/24.3.50/lisp/org | /usr/local/Cellar/emacs/HEAD/share/emacs/24.3.50/lisp/nxml | /usr/local/Cellar/emacs/HEAD/share/emacs/24.3.50/lisp/net | /usr/local/Cellar/emacs/HEAD/share/emacs/24.3.50/lisp/mh-e | /usr/local/Cellar/emacs/HEAD/share/emacs/24.3.50/lisp/mail | /usr/local/Cellar/emacs/HEAD/share/emacs/24.3.50/lisp/language | /usr/local/Cellar/emacs/HEAD/share/emacs/24.3.50/lisp/international | /usr/local/Cellar/emacs/HEAD/share/emacs/24.3.50/lisp/gnus | /usr/local/Cellar/emacs/HEAD/share/emacs/24.3.50/lisp/eshell | /usr/local/Cellar/emacs/HEAD/share/emacs/24.3.50/lisp/erc | /usr/local/Cellar/emacs/HEAD/share/emacs/24.3.50/lisp/emulation | /usr/local/Cellar/emacs/HEAD/share/emacs/24.3.50/lisp/emacs-lisp | /usr/local/Cellar/emacs/HEAD/share/emacs/24.3.50/lisp/cedet | /usr/local/Cellar/emacs/HEAD/share/emacs/24.3.50/lisp/calendar | /usr/local/Cellar/emacs/HEAD/share/emacs/24.3.50/lisp/calc | /usr/local/Cellar/emacs/HEAD/share/emacs/24.3.50/lisp/obsolete | /usr/local/Cellar/emacs/HEAD/share/emacs/24.3.50/leim | /Users/mgualt/.emacs.d/auto-save-list | /Users/mgualt/.emacs.d/backups | /Users/mgualt/.emacs.d/elpa | /Users/mgualt/.emacs.d/eshell | /Users/mgualt/.emacs.d/git-wip | /Users/mgualt/.emacs.d/image-dired | /Users/mgualt/.emacs.d/local-autocomplete | /Users/mgualt/.emacs.d/snippets | /Users/mgualt/.emacs.d/src | /Users/mgualt/.emacs.d/url | /Users/mgualt/.emacs.d/elpa/ack-and-a-half-20130204.1838 | /Users/mgualt/.emacs.d/elpa/archives | /Users/mgualt/.emacs.d/elpa/auctex-11.86 | /Users/mgualt/.emacs.d/elpa/auto-complete-20130724.1750 | /Users/mgualt/.emacs.d/elpa/autopair-0.3 | /Users/mgualt/.emacs.d/elpa/browse-kill-ring-1.3.1 | /Users/mgualt/.emacs.d/elpa/cdlatex-4.0 | /Users/mgualt/.emacs.d/elpa/concurrent-20120306.1807 | /Users/mgualt/.emacs.d/elpa/creole-0.8.12 | /Users/mgualt/.emacs.d/elpa/ctable-20130706.1939 | /Users/mgualt/.emacs.d/elpa/deferred-20130523.1007 | /Users/mgualt/.emacs.d/elpa/epc-20130804.1428 | /Users/mgualt/.emacs.d/elpa/ess-20130711.2359 | /Users/mgualt/.emacs.d/elpa/exec-path-from-shell-20130806.925 | /Users/mgualt/.emacs.d/elpa/expand-region-20130710.1104 | /Users/mgualt/.emacs.d/elpa/fakir-0.0.10 | /Users/mgualt/.emacs.d/elpa/gh-0.5.3 | /Users/mgualt/.emacs.d/elpa/gist-1.0.1 | /Users/mgualt/.emacs.d/elpa/haskell-mode-2.8.0 | /Users/mgualt/.emacs.d/elpa/highline-7.2.2 | /Users/mgualt/.emacs.d/elpa/hl-line+-20130723.2210 | /Users/mgualt/.emacs.d/elpa/htmlize-20130207.2102 | /Users/mgualt/.emacs.d/elpa/idle-highlight-1.0 | /Users/mgualt/.emacs.d/elpa/inf-ruby-2.2.3 | /Users/mgualt/.emacs.d/elpa/ipython-2927 | /Users/mgualt/.emacs.d/elpa/jedi-20130714.1415 | /Users/mgualt/.emacs.d/elpa/js2-mode-20090814 | /Users/mgualt/.emacs.d/elpa/latex-pretty-symbols-20111011.1446 | /Users/mgualt/.emacs.d/elpa/logito-0.1 | /Users/mgualt/.emacs.d/elpa/mac-key-mode-2010.1.3 | /Users/mgualt/.emacs.d/elpa/magit-1.1.1 | /Users/mgualt/.emacs.d/elpa/markdown-mode-1.8.1 | /Users/mgualt/.emacs.d/elpa/maxframe-0.5.1 | /Users/mgualt/.emacs.d/elpa/move-text-20130506.1826 | /Users/mgualt/.emacs.d/elpa/multiple-cursors-1.2.1 | /Users/mgualt/.emacs.d/elpa/org-20130805 | /Users/mgualt/.emacs.d/elpa/pandoc-mode-20130619.331 | /Users/mgualt/.emacs.d/elpa/paredit-20130722.1324 | /Users/mgualt/.emacs.d/elpa/paredit-22 | /Users/mgualt/.emacs.d/elpa/pcache-0.2.3 | /Users/mgualt/.emacs.d/elpa/pcache-20120408.1206 | /Users/mgualt/.emacs.d/elpa/popup-20130324.1305 | /Users/mgualt/.emacs.d/elpa/python-20120402 | /Users/mgualt/.emacs.d/elpa/r-autoyas-0.28 | /Users/mgualt/.emacs.d/elpa/redo+-1.15 | /Users/mgualt/.emacs.d/elpa/redo+-20130424.155 | /Users/mgualt/.emacs.d/elpa/s-20130617.1851 | /Users/mgualt/.emacs.d/elpa/smex-1.1.2 | /Users/mgualt/.emacs.d/elpa/smex-20130707.1255 | /Users/mgualt/.emacs.d/elpa/solarized-theme-0.5.0 | /Users/mgualt/.emacs.d/elpa/solarized-theme-20130804.1649 | /Users/mgualt/.emacs.d/elpa/tango-2-theme-1.0.0 | /Users/mgualt/.emacs.d/elpa/tango-2-theme-20120312.1325 | /Users/mgualt/.emacs.d/elpa/textmate-20110816.1446 | /Users/mgualt/.emacs.d/elpa/textmate-4 | /Users/mgualt/.emacs.d/elpa/typopunct-1.0 | /Users/mgualt/.emacs.d/elpa/visual-regexp-20130527.1820 | /Users/mgualt/.emacs.d/elpa/web-0.1.2 | /Users/mgualt/.emacs.d/elpa/web-20130429.1926 | /Users/mgualt/.emacs.d/elpa/yaml-mode-0.0.7 | /Users/mgualt/.emacs.d/elpa/yaml-mode-20130311.1301 | /Users/mgualt/.emacs.d/elpa/yasnippet-20130722.1832 | /Users/mgualt/.emacs.d/elpa/yasnippet-bundle-0.6.1 | /Users/mgualt/.emacs.d/elpa/zenburn-theme-1.5 | /Users/mgualt/.emacs.d/elpa/zenburn-theme-20130716.1457 | /Users/mgualt/.emacs.d/git-wip/emacs | /Users/mgualt/.emacs.d/git-wip/vim | /Users/mgualt/.emacs.d/local-autocomplete/ess | /Users/mgualt/.emacs.d/snippets/org-mode | /Users/mgualt/.emacs.d/snippets/text-mode | /Users/mgualt/.emacs.d/src/dvc | /Users/mgualt/.emacs.d/src/ebib | /Users/mgualt/.emacs.d/src/ess | /Users/mgualt/.emacs.d/src/ess-tracebug | /Users/mgualt/.emacs.d/src/minimal | /Users/mgualt/.emacs.d/src/org-bullets | /Users/mgualt/.emacs.d/src/smooth-scrolling | /Users/mgualt/.emacs.d/src/stripe-buffer | /Users/mgualt/.emacs.d/src/wc | /Users/mgualt/.emacs.d/src/word-count | /Users/mgualt/.emacs.d/elpa/archives/gnu | /Users/mgualt/.emacs.d/elpa/archives/marmalade | /Users/mgualt/.emacs.d/elpa/archives/melpa | /Users/mgualt/.emacs.d/elpa/archives/org | /Users/mgualt/.emacs.d/elpa/archives/technomancy | /Users/mgualt/.emacs.d/elpa/auctex-11.86/doc | /Users/mgualt/.emacs.d/elpa/auctex-11.86/images | /Users/mgualt/.emacs.d/elpa/auctex-11.86/latex | /Users/mgualt/.emacs.d/elpa/auto-complete-20130724.1750/dict | /Users/mgualt/.emacs.d/elpa/ess-20130711.2359/etc | /Users/mgualt/.emacs.d/elpa/ess-20130711.2359/lisp | /Users/mgualt/.emacs.d/elpa/org-20130805/etc | /Users/mgualt/.emacs.d/elpa/yasnippet-20130722.1832/snippets | /Users/mgualt/.emacs.d/git-wip/vim/plugin | /Users/mgualt/.emacs.d/snippets/text-mode/latex-mode | /Users/mgualt/.emacs.d/snippets/text-mode/org-mode | /Users/mgualt/.emacs.d/src/dvc/debian | /Users/mgualt/.emacs.d/src/dvc/docs | /Users/mgualt/.emacs.d/src/dvc/lisp | /Users/mgualt/.emacs.d/src/dvc/scripts | /Users/mgualt/.emacs.d/src/dvc/texinfo | /Users/mgualt/.emacs.d/src/ebib/manual | /Users/mgualt/.emacs.d/src/ebib/src | /Users/mgualt/.emacs.d/src/ebib/webpage | /Users/mgualt/.emacs.d/src/ess/LDA | /Users/mgualt/.emacs.d/src/ess/debian | /Users/mgualt/.emacs.d/src/ess/doc | /Users/mgualt/.emacs.d/src/ess/etc | /Users/mgualt/.emacs.d/src/ess/fontlock-test | /Users/mgualt/.emacs.d/src/ess/lisp | /Users/mgualt/.emacs.d/elpa/ess-20130711.2359/etc/icons | /Users/mgualt/.emacs.d/elpa/ess-20130711.2359/etc/other | /Users/mgualt/.emacs.d/elpa/org-20130805/etc/styles | /Users/mgualt/.emacs.d/elpa/yasnippet-20130722.1832/snippets/c++-mode | /Users/mgualt/.emacs.d/elpa/yasnippet-20130722.1832/snippets/c-mode | /Users/mgualt/.emacs.d/elpa/yasnippet-20130722.1832/snippets/cc-mode | /Users/mgualt/.emacs.d/elpa/yasnippet-20130722.1832/snippets/cperl-mode | /Users/mgualt/.emacs.d/elpa/yasnippet-20130722.1832/snippets/csharp-mode | /Users/mgualt/.emacs.d/elpa/yasnippet-20130722.1832/snippets/css-mode | /Users/mgualt/.emacs.d/elpa/yasnippet-20130722.1832/snippets/emacs-lisp-mode | /Users/mgualt/.emacs.d/elpa/yasnippet-20130722.1832/snippets/erlang-mode | /Users/mgualt/.emacs.d/elpa/yasnippet-20130722.1832/snippets/f90-mode | /Users/mgualt/.emacs.d/elpa/yasnippet-20130722.1832/snippets/html-mode | /Users/mgualt/.emacs.d/elpa/yasnippet-20130722.1832/snippets/js-mode | /Users/mgualt/.emacs.d/elpa/yasnippet-20130722.1832/snippets/latex-mode | /Users/mgualt/.emacs.d/elpa/yasnippet-20130722.1832/snippets/markdown-mode | /Users/mgualt/.emacs.d/elpa/yasnippet-20130722.1832/snippets/nxml-mode | /Users/mgualt/.emacs.d/elpa/yasnippet-20130722.1832/snippets/objc-mode | /Users/mgualt/.emacs.d/elpa/yasnippet-20130722.1832/snippets/perl-mode | /Users/mgualt/.emacs.d/elpa/yasnippet-20130722.1832/snippets/python-mode | /Users/mgualt/.emacs.d/elpa/yasnippet-20130722.1832/snippets/rst-mode | /Users/mgualt/.emacs.d/elpa/yasnippet-20130722.1832/snippets/ruby-mode | /Users/mgualt/.emacs.d/elpa/yasnippet-20130722.1832/snippets/scala-mode | /Users/mgualt/.emacs.d/elpa/yasnippet-20130722.1832/snippets/snippet-mode | /Users/mgualt/.emacs.d/elpa/yasnippet-20130722.1832/snippets/sql-mode | /Users/mgualt/.emacs.d/elpa/yasnippet-20130722.1832/snippets/text-mode | /Users/mgualt/.emacs.d/src/dvc/lisp/contrib | /Users/mgualt/.emacs.d/src/dvc/lisp/tests | /Users/mgualt/.emacs.d/src/ebib/webpage/images | /Users/mgualt/.emacs.d/src/ess/debian/source | /Users/mgualt/.emacs.d/src/ess/doc/dsc2001-rmh | /Users/mgualt/.emacs.d/src/ess/doc/html | /Users/mgualt/.emacs.d/src/ess/doc/images | /Users/mgualt/.emacs.d/src/ess/doc/info | /Users/mgualt/.emacs.d/src/ess/doc/jcgs | /Users/mgualt/.emacs.d/src/ess/doc/philasug | /Users/mgualt/.emacs.d/src/ess/doc/refcard | /Users/mgualt/.emacs.d/src/ess/doc/techrep | /Users/mgualt/.emacs.d/src/ess/doc/useR-2006-ESS | /Users/mgualt/.emacs.d/src/ess/doc/user-faq | /Users/mgualt/.emacs.d/src/ess/doc/user-manual | /Users/mgualt/.emacs.d/src/ess/etc/icons | /Users/mgualt/.emacs.d/src/ess/etc/other | /Users/mgualt/.emacs.d/src/ess/lisp/tmp | /Users/mgualt/.emacs.d/elpa/ess-20130711.2359/etc/other/S-spread | /Users/mgualt/.emacs.d/elpa/yasnippet-20130722.1832/snippets/html-mode/header | /Users/mgualt/.emacs.d/elpa/yasnippet-20130722.1832/snippets/html-mode/list | /Users/mgualt/.emacs.d/elpa/yasnippet-20130722.1832/snippets/html-mode/meta | /Users/mgualt/.emacs.d/elpa/yasnippet-20130722.1832/snippets/html-mode/table | /Users/mgualt/.emacs.d/elpa/yasnippet-20130722.1832/snippets/nxml-mode/header | /Users/mgualt/.emacs.d/elpa/yasnippet-20130722.1832/snippets/nxml-mode/meta | /Users/mgualt/.emacs.d/elpa/yasnippet-20130722.1832/snippets/ruby-mode/collections | /Users/mgualt/.emacs.d/elpa/yasnippet-20130722.1832/snippets/ruby-mode/control structure | /Users/mgualt/.emacs.d/elpa/yasnippet-20130722.1832/snippets/ruby-mode/definitions | /Users/mgualt/.emacs.d/elpa/yasnippet-20130722.1832/snippets/ruby-mode/general | /Users/mgualt/.emacs.d/src/ess/doc/images/icons | /Users/mgualt/.emacs.d/src/ess/doc/techrep/images | /Users/mgualt/.emacs.d/src/ess/doc/useR-2006-ESS/Lab1 | /Users/mgualt/.emacs.d/src/ess/doc/useR-2006-ESS/Lab2 | /Users/mgualt/.emacs.d/src/ess/doc/useR-2006-ESS/R-examples | /Users/mgualt/.emacs.d/src/ess/doc/useR-2006-ESS/RefCards | /Users/mgualt/.emacs.d/src/ess/etc/other/S-spread | /Users/mgualt/.emacs.d/src/ess/doc/useR-2006-ESS/Lab1/auto | /Users/mgualt/.emacs.d/src/ess/doc/useR-2006-ESS/Lab2/auto |
+
 You can keep elisp source in the =src= directory.  Packages loaded
 from here will override those installed by ELPA.  This is useful if
 you want to track the development versions of a project, or if a
@@ -395,6 +405,9 @@ project is not in elpa.
 (setq elisp-source-dir (concat dotfiles-dir "src"))
 (add-to-list 'load-path elisp-source-dir)
 #+end_src
+
+#+RESULTS:
+| /Users/mgualt/.emacs.d/mgualt | /Users/mgualt/.emacs.d/elpa/tango-2-theme-20120312.1325 | /Users/mgualt/.emacs.d/elpa/tango-2-theme-20120312.1325 | /Users/mgualt/.emacs.d/ | ~/.emacs.d/ | /Users/mgualt/.emacs.d/elpa/ack-and-a-half-20130204.1838 | /Users/mgualt/.emacs.d/elpa/auctex-11.86/ | /Users/mgualt/.emacs.d/elpa/auctex-11.86 | /Users/mgualt/.emacs.d/elpa/autopair-0.3 | /Users/mgualt/.emacs.d/elpa/browse-kill-ring-1.3.1 | /Users/mgualt/.emacs.d/elpa/cdlatex-4.0 | /Users/mgualt/.emacs.d/elpa/creole-0.8.12 | /Users/mgualt/.emacs.d/elpa/ess-20130711.2359/lisp/ | /Users/mgualt/.emacs.d/elpa/ess-20130711.2359 | /Users/mgualt/.emacs.d/elpa/exec-path-from-shell-20130806.925 | /Users/mgualt/.emacs.d/elpa/expand-region-20130710.1104 | /Users/mgualt/.emacs.d/elpa/fakir-0.0.10 | /Users/mgualt/.emacs.d/elpa/gist-1.0.1 | /Users/mgualt/.emacs.d/elpa/gh-0.5.3 | /Users/mgualt/.emacs.d/elpa/logito-0.1 | /Users/mgualt/.emacs.d/elpa/pcache-20120408.1206 | /Users/mgualt/.emacs.d/elpa/haskell-mode-2.8.0/ | /Users/mgualt/.emacs.d/elpa/haskell-mode-2.8.0 | /Users/mgualt/.emacs.d/elpa/highline-7.2.2 | /Users/mgualt/.emacs.d/elpa/hl-line+-20130723.2210 | /Users/mgualt/.emacs.d/elpa/htmlize-20130207.2102 | /Users/mgualt/.emacs.d/elpa/idle-highlight-1.0 | /Users/mgualt/.emacs.d/elpa/inf-ruby-2.2.3 | /Users/mgualt/.emacs.d/elpa/ipython-2927 | /Users/mgualt/.emacs.d/elpa/jedi-20130714.1415 | /Users/mgualt/.emacs.d/elpa/auto-complete-20130724.1750 | /Users/mgualt/.emacs.d/elpa/popup-20130324.1305 | /Users/mgualt/.emacs.d/elpa/epc-20130804.1428 | /Users/mgualt/.emacs.d/elpa/ctable-20130706.1939 | /Users/mgualt/.emacs.d/elpa/concurrent-20120306.1807 | /Users/mgualt/.emacs.d/elpa/deferred-20130523.1007 | /Users/mgualt/.emacs.d/elpa/js2-mode-20090814 | /Users/mgualt/.emacs.d/elpa/latex-pretty-symbols-20111011.1446 | /Users/mgualt/.emacs.d/elpa/logito-0.1 | /Users/mgualt/.emacs.d/elpa/mac-key-mode-2010.1.3 | /Users/mgualt/.emacs.d/elpa/magit-1.1.1 | /Users/mgualt/.emacs.d/elpa/markdown-mode-1.8.1 | /Users/mgualt/.emacs.d/elpa/maxframe-0.5.1 | /Users/mgualt/.emacs.d/elpa/move-text-20130506.1826 | /Users/mgualt/.emacs.d/elpa/multiple-cursors-1.2.1 | /Users/mgualt/.emacs.d/elpa/org-20130805 | /Users/mgualt/.emacs.d/elpa/pandoc-mode-20130619.331 | /Users/mgualt/.emacs.d/elpa/paredit-20130722.1324 | /Users/mgualt/.emacs.d/elpa/pcache-20120408.1206 | /Users/mgualt/.emacs.d/elpa/popup-20130324.1305 | /Users/mgualt/.emacs.d/elpa/python-20120402 | /Users/mgualt/.emacs.d/elpa/r-autoyas-0.28 | /Users/mgualt/.emacs.d/elpa/redo+-20130424.155 | /Users/mgualt/.emacs.d/elpa/s-20130617.1851 | /Users/mgualt/.emacs.d/elpa/smex-20130707.1255 | /Users/mgualt/.emacs.d/elpa/solarized-theme-20130804.1649 | /Users/mgualt/.emacs.d/elpa/textmate-20110816.1446 | /Users/mgualt/.emacs.d/elpa/typopunct-1.0 | /Users/mgualt/.emacs.d/elpa/visual-regexp-20130527.1820 | /Users/mgualt/.emacs.d/elpa/web-20130429.1926 | /Users/mgualt/.emacs.d/elpa/yaml-mode-20130311.1301 | /Users/mgualt/.emacs.d/elpa/yasnippet-20130722.1832 | /Users/mgualt/.emacs.d/elpa/yasnippet-bundle-0.6.1 | /Users/mgualt/.emacs.d/elpa/zenburn-theme-20130716.1457 | ~/.emacs.d/ | /Users/mgualt/.emacs.d/src/org/lisp | /usr/local/share/emacs/site-lisp | /usr/local/Cellar/emacs/HEAD/share/emacs/24.3.50/lisp | /usr/local/Cellar/emacs/HEAD/share/emacs/24.3.50/lisp/vc | /usr/local/Cellar/emacs/HEAD/share/emacs/24.3.50/lisp/url | /usr/local/Cellar/emacs/HEAD/share/emacs/24.3.50/lisp/textmodes | /usr/local/Cellar/emacs/HEAD/share/emacs/24.3.50/lisp/progmodes | /usr/local/Cellar/emacs/HEAD/share/emacs/24.3.50/lisp/play | /usr/local/Cellar/emacs/HEAD/share/emacs/24.3.50/lisp/org | /usr/local/Cellar/emacs/HEAD/share/emacs/24.3.50/lisp/nxml | /usr/local/Cellar/emacs/HEAD/share/emacs/24.3.50/lisp/net | /usr/local/Cellar/emacs/HEAD/share/emacs/24.3.50/lisp/mh-e | /usr/local/Cellar/emacs/HEAD/share/emacs/24.3.50/lisp/mail | /usr/local/Cellar/emacs/HEAD/share/emacs/24.3.50/lisp/language | /usr/local/Cellar/emacs/HEAD/share/emacs/24.3.50/lisp/international | /usr/local/Cellar/emacs/HEAD/share/emacs/24.3.50/lisp/gnus | /usr/local/Cellar/emacs/HEAD/share/emacs/24.3.50/lisp/eshell | /usr/local/Cellar/emacs/HEAD/share/emacs/24.3.50/lisp/erc | /usr/local/Cellar/emacs/HEAD/share/emacs/24.3.50/lisp/emulation | /usr/local/Cellar/emacs/HEAD/share/emacs/24.3.50/lisp/emacs-lisp | /usr/local/Cellar/emacs/HEAD/share/emacs/24.3.50/lisp/cedet | /usr/local/Cellar/emacs/HEAD/share/emacs/24.3.50/lisp/calendar | /usr/local/Cellar/emacs/HEAD/share/emacs/24.3.50/lisp/calc | /usr/local/Cellar/emacs/HEAD/share/emacs/24.3.50/lisp/obsolete | /usr/local/Cellar/emacs/HEAD/share/emacs/24.3.50/leim | /Users/mgualt/.emacs.d/auto-save-list | /Users/mgualt/.emacs.d/backups | /Users/mgualt/.emacs.d/elpa | /Users/mgualt/.emacs.d/eshell | /Users/mgualt/.emacs.d/git-wip | /Users/mgualt/.emacs.d/image-dired | /Users/mgualt/.emacs.d/local-autocomplete | /Users/mgualt/.emacs.d/snippets | /Users/mgualt/.emacs.d/src | /Users/mgualt/.emacs.d/url | /Users/mgualt/.emacs.d/elpa/ack-and-a-half-20130204.1838 | /Users/mgualt/.emacs.d/elpa/archives | /Users/mgualt/.emacs.d/elpa/auctex-11.86 | /Users/mgualt/.emacs.d/elpa/auto-complete-20130724.1750 | /Users/mgualt/.emacs.d/elpa/autopair-0.3 | /Users/mgualt/.emacs.d/elpa/browse-kill-ring-1.3.1 | /Users/mgualt/.emacs.d/elpa/cdlatex-4.0 | /Users/mgualt/.emacs.d/elpa/concurrent-20120306.1807 | /Users/mgualt/.emacs.d/elpa/creole-0.8.12 | /Users/mgualt/.emacs.d/elpa/ctable-20130706.1939 | /Users/mgualt/.emacs.d/elpa/deferred-20130523.1007 | /Users/mgualt/.emacs.d/elpa/epc-20130804.1428 | /Users/mgualt/.emacs.d/elpa/ess-20130711.2359 | /Users/mgualt/.emacs.d/elpa/exec-path-from-shell-20130806.925 | /Users/mgualt/.emacs.d/elpa/expand-region-20130710.1104 | /Users/mgualt/.emacs.d/elpa/fakir-0.0.10 | /Users/mgualt/.emacs.d/elpa/gh-0.5.3 | /Users/mgualt/.emacs.d/elpa/gist-1.0.1 | /Users/mgualt/.emacs.d/elpa/haskell-mode-2.8.0 | /Users/mgualt/.emacs.d/elpa/highline-7.2.2 | /Users/mgualt/.emacs.d/elpa/hl-line+-20130723.2210 | /Users/mgualt/.emacs.d/elpa/htmlize-20130207.2102 | /Users/mgualt/.emacs.d/elpa/idle-highlight-1.0 | /Users/mgualt/.emacs.d/elpa/inf-ruby-2.2.3 | /Users/mgualt/.emacs.d/elpa/ipython-2927 | /Users/mgualt/.emacs.d/elpa/jedi-20130714.1415 | /Users/mgualt/.emacs.d/elpa/js2-mode-20090814 | /Users/mgualt/.emacs.d/elpa/latex-pretty-symbols-20111011.1446 | /Users/mgualt/.emacs.d/elpa/logito-0.1 | /Users/mgualt/.emacs.d/elpa/mac-key-mode-2010.1.3 | /Users/mgualt/.emacs.d/elpa/magit-1.1.1 | /Users/mgualt/.emacs.d/elpa/markdown-mode-1.8.1 | /Users/mgualt/.emacs.d/elpa/maxframe-0.5.1 | /Users/mgualt/.emacs.d/elpa/move-text-20130506.1826 | /Users/mgualt/.emacs.d/elpa/multiple-cursors-1.2.1 | /Users/mgualt/.emacs.d/elpa/org-20130805 | /Users/mgualt/.emacs.d/elpa/pandoc-mode-20130619.331 | /Users/mgualt/.emacs.d/elpa/paredit-20130722.1324 | /Users/mgualt/.emacs.d/elpa/paredit-22 | /Users/mgualt/.emacs.d/elpa/pcache-0.2.3 | /Users/mgualt/.emacs.d/elpa/pcache-20120408.1206 | /Users/mgualt/.emacs.d/elpa/popup-20130324.1305 | /Users/mgualt/.emacs.d/elpa/python-20120402 | /Users/mgualt/.emacs.d/elpa/r-autoyas-0.28 | /Users/mgualt/.emacs.d/elpa/redo+-1.15 | /Users/mgualt/.emacs.d/elpa/redo+-20130424.155 | /Users/mgualt/.emacs.d/elpa/s-20130617.1851 | /Users/mgualt/.emacs.d/elpa/smex-1.1.2 | /Users/mgualt/.emacs.d/elpa/smex-20130707.1255 | /Users/mgualt/.emacs.d/elpa/solarized-theme-0.5.0 | /Users/mgualt/.emacs.d/elpa/solarized-theme-20130804.1649 | /Users/mgualt/.emacs.d/elpa/tango-2-theme-1.0.0 | /Users/mgualt/.emacs.d/elpa/tango-2-theme-20120312.1325 | /Users/mgualt/.emacs.d/elpa/textmate-20110816.1446 | /Users/mgualt/.emacs.d/elpa/textmate-4 | /Users/mgualt/.emacs.d/elpa/typopunct-1.0 | /Users/mgualt/.emacs.d/elpa/visual-regexp-20130527.1820 | /Users/mgualt/.emacs.d/elpa/web-0.1.2 | /Users/mgualt/.emacs.d/elpa/web-20130429.1926 | /Users/mgualt/.emacs.d/elpa/yaml-mode-0.0.7 | /Users/mgualt/.emacs.d/elpa/yaml-mode-20130311.1301 | /Users/mgualt/.emacs.d/elpa/yasnippet-20130722.1832 | /Users/mgualt/.emacs.d/elpa/yasnippet-bundle-0.6.1 | /Users/mgualt/.emacs.d/elpa/zenburn-theme-1.5 | /Users/mgualt/.emacs.d/elpa/zenburn-theme-20130716.1457 | /Users/mgualt/.emacs.d/git-wip/emacs | /Users/mgualt/.emacs.d/git-wip/vim | /Users/mgualt/.emacs.d/local-autocomplete/ess | /Users/mgualt/.emacs.d/snippets/org-mode | /Users/mgualt/.emacs.d/snippets/text-mode | /Users/mgualt/.emacs.d/src/dvc | /Users/mgualt/.emacs.d/src/ebib | /Users/mgualt/.emacs.d/src/ess | /Users/mgualt/.emacs.d/src/ess-tracebug | /Users/mgualt/.emacs.d/src/minimal | /Users/mgualt/.emacs.d/src/org-bullets | /Users/mgualt/.emacs.d/src/smooth-scrolling | /Users/mgualt/.emacs.d/src/stripe-buffer | /Users/mgualt/.emacs.d/src/wc | /Users/mgualt/.emacs.d/src/word-count | /Users/mgualt/.emacs.d/elpa/archives/gnu | /Users/mgualt/.emacs.d/elpa/archives/marmalade | /Users/mgualt/.emacs.d/elpa/archives/melpa | /Users/mgualt/.emacs.d/elpa/archives/org | /Users/mgualt/.emacs.d/elpa/archives/technomancy | /Users/mgualt/.emacs.d/elpa/auctex-11.86/doc | /Users/mgualt/.emacs.d/elpa/auctex-11.86/images | /Users/mgualt/.emacs.d/elpa/auctex-11.86/latex | /Users/mgualt/.emacs.d/elpa/auto-complete-20130724.1750/dict | /Users/mgualt/.emacs.d/elpa/ess-20130711.2359/etc | /Users/mgualt/.emacs.d/elpa/ess-20130711.2359/lisp | /Users/mgualt/.emacs.d/elpa/org-20130805/etc | /Users/mgualt/.emacs.d/elpa/yasnippet-20130722.1832/snippets | /Users/mgualt/.emacs.d/git-wip/vim/plugin | /Users/mgualt/.emacs.d/snippets/text-mode/latex-mode | /Users/mgualt/.emacs.d/snippets/text-mode/org-mode | /Users/mgualt/.emacs.d/src/dvc/debian | /Users/mgualt/.emacs.d/src/dvc/docs | /Users/mgualt/.emacs.d/src/dvc/lisp | /Users/mgualt/.emacs.d/src/dvc/scripts | /Users/mgualt/.emacs.d/src/dvc/texinfo | /Users/mgualt/.emacs.d/src/ebib/manual | /Users/mgualt/.emacs.d/src/ebib/src | /Users/mgualt/.emacs.d/src/ebib/webpage | /Users/mgualt/.emacs.d/src/ess/LDA | /Users/mgualt/.emacs.d/src/ess/debian | /Users/mgualt/.emacs.d/src/ess/doc | /Users/mgualt/.emacs.d/src/ess/etc | /Users/mgualt/.emacs.d/src/ess/fontlock-test | /Users/mgualt/.emacs.d/src/ess/lisp | /Users/mgualt/.emacs.d/elpa/ess-20130711.2359/etc/icons | /Users/mgualt/.emacs.d/elpa/ess-20130711.2359/etc/other | /Users/mgualt/.emacs.d/elpa/org-20130805/etc/styles | /Users/mgualt/.emacs.d/elpa/yasnippet-20130722.1832/snippets/c++-mode | /Users/mgualt/.emacs.d/elpa/yasnippet-20130722.1832/snippets/c-mode | /Users/mgualt/.emacs.d/elpa/yasnippet-20130722.1832/snippets/cc-mode | /Users/mgualt/.emacs.d/elpa/yasnippet-20130722.1832/snippets/cperl-mode | /Users/mgualt/.emacs.d/elpa/yasnippet-20130722.1832/snippets/csharp-mode | /Users/mgualt/.emacs.d/elpa/yasnippet-20130722.1832/snippets/css-mode | /Users/mgualt/.emacs.d/elpa/yasnippet-20130722.1832/snippets/emacs-lisp-mode | /Users/mgualt/.emacs.d/elpa/yasnippet-20130722.1832/snippets/erlang-mode | /Users/mgualt/.emacs.d/elpa/yasnippet-20130722.1832/snippets/f90-mode | /Users/mgualt/.emacs.d/elpa/yasnippet-20130722.1832/snippets/html-mode | /Users/mgualt/.emacs.d/elpa/yasnippet-20130722.1832/snippets/js-mode | /Users/mgualt/.emacs.d/elpa/yasnippet-20130722.1832/snippets/latex-mode | /Users/mgualt/.emacs.d/elpa/yasnippet-20130722.1832/snippets/markdown-mode | /Users/mgualt/.emacs.d/elpa/yasnippet-20130722.1832/snippets/nxml-mode | /Users/mgualt/.emacs.d/elpa/yasnippet-20130722.1832/snippets/objc-mode | /Users/mgualt/.emacs.d/elpa/yasnippet-20130722.1832/snippets/perl-mode | /Users/mgualt/.emacs.d/elpa/yasnippet-20130722.1832/snippets/python-mode | /Users/mgualt/.emacs.d/elpa/yasnippet-20130722.1832/snippets/rst-mode | /Users/mgualt/.emacs.d/elpa/yasnippet-20130722.1832/snippets/ruby-mode | /Users/mgualt/.emacs.d/elpa/yasnippet-20130722.1832/snippets/scala-mode | /Users/mgualt/.emacs.d/elpa/yasnippet-20130722.1832/snippets/snippet-mode | /Users/mgualt/.emacs.d/elpa/yasnippet-20130722.1832/snippets/sql-mode | /Users/mgualt/.emacs.d/elpa/yasnippet-20130722.1832/snippets/text-mode | /Users/mgualt/.emacs.d/src/dvc/lisp/contrib | /Users/mgualt/.emacs.d/src/dvc/lisp/tests | /Users/mgualt/.emacs.d/src/ebib/webpage/images | /Users/mgualt/.emacs.d/src/ess/debian/source | /Users/mgualt/.emacs.d/src/ess/doc/dsc2001-rmh | /Users/mgualt/.emacs.d/src/ess/doc/html | /Users/mgualt/.emacs.d/src/ess/doc/images | /Users/mgualt/.emacs.d/src/ess/doc/info | /Users/mgualt/.emacs.d/src/ess/doc/jcgs | /Users/mgualt/.emacs.d/src/ess/doc/philasug | /Users/mgualt/.emacs.d/src/ess/doc/refcard | /Users/mgualt/.emacs.d/src/ess/doc/techrep | /Users/mgualt/.emacs.d/src/ess/doc/useR-2006-ESS | /Users/mgualt/.emacs.d/src/ess/doc/user-faq | /Users/mgualt/.emacs.d/src/ess/doc/user-manual | /Users/mgualt/.emacs.d/src/ess/etc/icons | /Users/mgualt/.emacs.d/src/ess/etc/other | /Users/mgualt/.emacs.d/src/ess/lisp/tmp | /Users/mgualt/.emacs.d/elpa/ess-20130711.2359/etc/other/S-spread | /Users/mgualt/.emacs.d/elpa/yasnippet-20130722.1832/snippets/html-mode/header | /Users/mgualt/.emacs.d/elpa/yasnippet-20130722.1832/snippets/html-mode/list | /Users/mgualt/.emacs.d/elpa/yasnippet-20130722.1832/snippets/html-mode/meta | /Users/mgualt/.emacs.d/elpa/yasnippet-20130722.1832/snippets/html-mode/table | /Users/mgualt/.emacs.d/elpa/yasnippet-20130722.1832/snippets/nxml-mode/header | /Users/mgualt/.emacs.d/elpa/yasnippet-20130722.1832/snippets/nxml-mode/meta | /Users/mgualt/.emacs.d/elpa/yasnippet-20130722.1832/snippets/ruby-mode/collections | /Users/mgualt/.emacs.d/elpa/yasnippet-20130722.1832/snippets/ruby-mode/control structure | /Users/mgualt/.emacs.d/elpa/yasnippet-20130722.1832/snippets/ruby-mode/definitions | /Users/mgualt/.emacs.d/elpa/yasnippet-20130722.1832/snippets/ruby-mode/general | /Users/mgualt/.emacs.d/src/ess/doc/images/icons | /Users/mgualt/.emacs.d/src/ess/doc/techrep/images | /Users/mgualt/.emacs.d/src/ess/doc/useR-2006-ESS/Lab1 | /Users/mgualt/.emacs.d/src/ess/doc/useR-2006-ESS/Lab2 | /Users/mgualt/.emacs.d/src/ess/doc/useR-2006-ESS/R-examples | /Users/mgualt/.emacs.d/src/ess/doc/useR-2006-ESS/RefCards | /Users/mgualt/.emacs.d/src/ess/etc/other/S-spread | /Users/mgualt/.emacs.d/src/ess/doc/useR-2006-ESS/Lab1/auto | /Users/mgualt/.emacs.d/src/ess/doc/useR-2006-ESS/Lab2/auto |
 
 ** Load the rest of the starter kit core
 The following files contain the remainder of the core of the Emacs
@@ -409,7 +422,7 @@ Starter kit function definitions in [[file:starter-kit-defuns.org][starter-kit-d
 #+end_src
 
 #+RESULTS:
-: loaded /Users/mgualt/.emacs.d/starter-kit-defuns.el
+: Loaded /Users/mgualt/.emacs.d/starter-kit-defuns.el
 
 *** Starter kit bindings
 Key Bindings in [[file:starter-kit-bindings.org][starter-kit-bindings]]
@@ -419,7 +432,7 @@ Key Bindings in [[file:starter-kit-bindings.org][starter-kit-bindings]]
 #+end_src
 
 #+RESULTS:
-: loaded /Users/mgualt/.emacs.d/starter-kit-bindings.el
+: Loaded /Users/mgualt/.emacs.d/starter-kit-bindings.el
 
 *** Starter kit misc
 Miscellaneous settings in [[file:starter-kit-misc.org][starter-kit-misc]]
@@ -429,7 +442,7 @@ Miscellaneous settings in [[file:starter-kit-misc.org][starter-kit-misc]]
 #+end_src
 
 #+RESULTS:
-: loaded /Users/mgualt/.emacs.d/starter-kit-misc.el
+: Loaded /Users/mgualt/.emacs.d/starter-kit-misc.el
 
 *** Starter kit registers
 Registers for jumping to commonly used files in [[file:starter-kit-registers.org][starter-kit-registers]]
@@ -439,7 +452,7 @@ Registers for jumping to commonly used files in [[file:starter-kit-registers.org
 #+end_src
 
 #+RESULTS:
-: loaded /Users/mgualt/.emacs.d/starter-kit-registers.el
+: Loaded /Users/mgualt/.emacs.d/starter-kit-registers.el
 
 ** Language/Mode Specific Files
 These sections pertain to specific languages or modes.  Feel free to
@@ -449,12 +462,12 @@ language.
 *** Starter kit yasnippet
 Located in [[file:starter-kit-yasnippet.org][starter-kit-yasnippet]].
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp 
   (starter-kit-load "starter-kit-yasnippet.org")    
 #+end_src 
 
 #+RESULTS:
-: loaded /Users/mgualt/.emacs.d/starter-kit-yasnippet.el
+: Loaded /Users/mgualt/.emacs.d/starter-kit-yasnippet.el
 
 
 *** Starter kit Org-mode
@@ -464,12 +477,18 @@ Located in [[file:starter-kit-org.org][starter-kit-org]].
 (starter-kit-load "starter-kit-org.org")
 #+end_src
 
+#+RESULTS:
+: Loaded /Users/mgualt/.emacs.d/starter-kit-org.el
+
 *** Starter kit eshell
 Located in [[file:starter-kit-eshell.org][starter-kit-eshell]]
 
 #+begin_src emacs-lisp
 (starter-kit-load "starter-kit-eshell.org")
 #+end_src
+
+#+RESULTS:
+: Loaded /Users/mgualt/.emacs.d/starter-kit-eshell.el
 
 *** Starter kit lisp
 Located in [[file:starter-kit-lisp.org][starter-kit-lisp]]
@@ -478,19 +497,22 @@ Located in [[file:starter-kit-lisp.org][starter-kit-lisp]]
 (starter-kit-load "starter-kit-lisp.org")
 #+end_src
 
+#+RESULTS:
+: Loaded /Users/mgualt/.emacs.d/starter-kit-lisp.el
+
 
 *** Starter kit Haskell
 Located in [[file:starter-kit-haskell.org][starter-kit-haskell]]
 
 #+begin_src emacs-lisp :tangle no
-(starter-kit-load "starter-kit-haskell.org")
+ (starter-kit-load "starter-kit-haskell.org")
 #+end_src
 
 *** Starter kit ruby
 Located in [[file:starter-kit-ruby.org][starter-kit-ruby]]
 
 #+begin_src emacs-lisp :tangle no
-(starter-kit-load "starter-kit-ruby.org")
+ (starter-kit-load "starter-kit-ruby.org")
 #+end_src
 
 *** Starter kit JS
@@ -514,12 +536,18 @@ Located in [[file:starter-kit-python.org][starter-kit-python]]
 (starter-kit-load "starter-kit-python.org")
 #+end_src
 
+#+RESULTS:
+: Loaded /Users/mgualt/.emacs.d/starter-kit-python.el
+
 *** Starter Kit Latex
 Located in [[file:starter-kit-latex.org][starter-kit-latex]]
 
 #+begin_src emacs-lisp
-(starter-kit-load "starter-kit-latex.org")
+ (starter-kit-load "starter-kit-latex.org")
 #+end_src
+
+#+RESULTS:
+: Loaded /Users/mgualt/.emacs.d/starter-kit-latex.el
 
 *** Starter Kit Stats
 Located in [[file:starter-kit-stats.org][starter-kit-stats]]
@@ -542,6 +570,8 @@ Located in [[file:starter-kit-text.org][starter-kit-text]]
   (load custom-file 'noerror)
 #+end_src
 
+#+RESULTS:
+
 *** E-lisp customization
 After we've loaded all the Starter Kit defaults, lets load the User's stuff.
 #+srcname: starter-kit-load-files
@@ -552,14 +582,19 @@ After we've loaded all the Starter Kit defaults, lets load the User's stuff.
   (if (file-exists-p system-specific-config) (load system-specific-config))
   (if (file-exists-p system-specific-literate-config)
       (org-babel-load-file system-specific-literate-config))
+
   (if (file-exists-p user-specific-config) (load user-specific-config))
+
   (if (file-exists-p user-specific-literate-config)
       (org-babel-load-file user-specific-literate-config))
+
   (when (file-exists-p user-specific-dir)
     (let ((default-directory user-specific-dir))
       (mapc #'load (directory-files user-specific-dir nil ".*el$"))
       (mapc #'org-babel-load-file (directory-files user-specific-dir nil ".*org$"))))
 #+end_src
+
+#+RESULTS:
 
 * FAQ
   :PROPERTIES:

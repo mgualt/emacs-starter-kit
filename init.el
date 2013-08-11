@@ -1,3 +1,4 @@
+
 ;;; init.el --- Where all the magic begins
 ;;
 ;; Part of the Emacs Starter Kit
@@ -56,6 +57,8 @@
 ;; org-mode windmove compatibility
 (setq org-replace-disputed-keys t)
 (require 'org)
+(package-initialize)
+(require 'org-compat)
 (org-babel-load-file (expand-file-name "starter-kit.org" dotfiles-dir))
 
 ;;; init.el ends here

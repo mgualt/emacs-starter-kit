@@ -17,7 +17,7 @@ which is also *implemented using* Org-mode and [[http://git-scm.com/][git]].
 ** Helpful Packages
 #+begin_src emacs-lisp
 (setq org-completion-use-ido t)
-(require 'org-special-blocks)
+;;(require 'org-special-blocks)
 ;; (if window-system (require 'org-mouse))
 
 ;; Compatibility with WindMove
@@ -28,6 +28,9 @@ which is also *implemented using* Org-mode and [[http://git-scm.com/][git]].
 (add-hook 'org-shiftright-final-hook 'windmove-right)
 ;; (if window-system (require 'org-mouse))
 #+end_src
+
+#+RESULTS:
+| windmove-right |
 
 ** Org-Mode Hooks
 Make yasnippet work properly with org-mode. 
@@ -46,6 +49,9 @@ Make yasnippet work properly with org-mode.
             ))
 
 #+end_src
+
+#+RESULTS:
+| org-mode-reftex-setup | (lambda nil (local-set-key \216 (quote outline-next-visible-heading)) (local-set-key \220 (quote outline-previous-visible-heading)) (local-set-key \225 (quote outline-up-heading)) (local-set-key \227 (quote org-table-copy-region)) (local-set-key \231 (quote org-table-paste-rectangle)) (local-set-key \214 (quote org-table-sort-lines)) (local-set-key \311 (quote org-toggle-iimage-in-org))) | (lambda nil (add-to-list (quote org-tab-first-hook) (quote yas-org-very-safe-expand))) | er/add-org-mode-expansions | #[nil \300\301\302\303\304$\207 [org-add-hook change-major-mode-hook org-show-block-all append local] 5] | #[nil \300\301\302\303\304$\207 [org-add-hook change-major-mode-hook org-babel-show-result-all append local] 5] | org-babel-result-hide-spec | org-babel-hide-all-hashes |
 
 #+begin_src emacs-lisp
   (add-hook 'org-mode-hook
@@ -67,6 +73,9 @@ Make yasnippet work properly with org-mode.
               ))
 #+end_src
 
+#+RESULTS:
+| org-mode-reftex-setup | (lambda nil (local-set-key \216 (quote outline-next-visible-heading)) (local-set-key \220 (quote outline-previous-visible-heading)) (local-set-key \225 (quote outline-up-heading)) (local-set-key \227 (quote org-table-copy-region)) (local-set-key \231 (quote org-table-paste-rectangle)) (local-set-key \214 (quote org-table-sort-lines)) (local-set-key \311 (quote org-toggle-iimage-in-org))) | (lambda nil (add-to-list (quote org-tab-first-hook) (quote yas-org-very-safe-expand))) | er/add-org-mode-expansions | #[nil \300\301\302\303\304$\207 [org-add-hook change-major-mode-hook org-show-block-all append local] 5] | #[nil \300\301\302\303\304$\207 [org-add-hook change-major-mode-hook org-babel-show-result-all append local] 5] | org-babel-result-hide-spec | org-babel-hide-all-hashes |
+
 ** Load up the Library of Babel
 The library of babel contains makes many useful functions available
 for use by code blocks in *any* emacs file.  See the actual
@@ -84,6 +93,10 @@ for use by code blocks in *any* emacs file.  See the actual
        "org"
        (expand-file-name "src" dotfiles-dir))))))
 #+end_src
+
+#+RESULTS:
+: 0
+
 ** Speed keys
 Speed commands enable single-letter commands in Org-mode files when
 the point is at the beginning of a headline, or at the beginning of a
