@@ -1,3 +1,9 @@
+git-wip/
+q.log
+snippets/text-mode/org-mode/
+src/ebib/
+src/ess/
+src/org-mode/
 *.el~
 loaddefs.el*
 backups/*
