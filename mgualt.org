@@ -599,8 +599,15 @@ Make the initial buffer be the main directory for all my projects.
 
 #+srcname: initial-buffer-choice
 #+begin_src emacs-lisp 
- (setq initial-buffer-choice "~/Dropbox")
+    ;;(require 'dired-details)
+    ;;(setq-default dired-details-hidden-string "- ")
+    ;;(dired-details-install)
+  (setq dired-listing-switches "-gato")
+  (setq initial-buffer-choice "~/Dropbox")
 #+end_src
+
+#+RESULTS:
+: ~/Dropbox
 
 
 ** Final Custom elements
@@ -608,69 +615,83 @@ Some last tweaks.
 
 #+srcname: final-custom
 #+begin_src emacs-lisp
-  ;; Line-spacing tweak (Optimized for PragmataPro)
-  (setq-default line-spacing 2)
-  (minimal-mode 1)
-  ;; scroll one line at a time (less "jumpy" than defaults)
-    (setq mouse-wheel-scroll-amount '(1 ((shift) . 1))) ;; one line at a time
-    (setq mouse-wheel-progressive-speed nil) ;; don't accelerate scrolling
-    (setq mouse-wheel-follow-mouse 't) ;; scroll window under mouse
-    (setq scroll-step 1) ;; keyboard scroll one line at a time
+    ;; Line-spacing tweak (Optimized for PragmataPro)
+    (setq-default line-spacing 2)
+    (minimal-mode 1)
+    ;; scroll one line at a time (less "jumpy" than defaults)
+      (setq mouse-wheel-scroll-amount '(1 ((shift) . 1))) ;; one line at a time
+      (setq mouse-wheel-progressive-speed nil) ;; don't accelerate scrolling
+      (setq mouse-wheel-follow-mouse 't) ;; scroll window under mouse
+      (setq scroll-step 1) ;; keyboard scroll one line at a time
+    
+    ;; minimize fringe
+    (setq-default indicate-empty-lines nil)
+    
+    ;; Add keybindings for commenting regions of text
+    (global-set-key (kbd "C-c ;") 'comment-or-uncomment-region)
+    ;;(global-set-key (kbd "M-'") 'comment-or-uncomment-region)
+    
+    ;; Base dir
+    (cd "~/")
+    
+    ;; custom variables kludge. Why can't I get these to work via setq?
+    (custom-set-variables
+    ;; custom-set-variables was added by Custom.
+    ;; If you edit it by hand, you could mess it up, so be careful.
+    ;; Your init file should contain only one such instance.
+    ;; If there is more than one, they won't work right.
+    '(LaTeX-XeTeX-command "xelatex -synctex=1")
+    '(TeX-engine (quote xetex))
+    
+    ;; '(TeX-view-program-list (quote (("Skim" "/Applications/Skim.app/Contents/SharedSupport/displayline %n %o %b"))))
+    ;; '(TeX-view-program-selection (quote (((output-dvi style-pstricks) "dvips and gv") (output-dvi "xdvi") (output-pdf "Skim") (output-html "xdg-open"))))
+    '(show-paren-mode t)
+    '(blink-cursor-mode nil)
+    '(text-mode-hook (quote (text-mode-hook-identify)))
+    )
+    ;; make latexmk available via C-c C-c
+    ;; Note: SyncTeX is setup via ~/.latexmkrc (see below)
   
-  ;; minimize fringe
-  (setq-default indicate-empty-lines nil)
   
-  ;; Add keybindings for commenting regions of text
-  (global-set-key (kbd "C-c ;") 'comment-or-uncomment-region)
-  ;;(global-set-key (kbd "M-'") 'comment-or-uncomment-region)
   
-  ;; Base dir
-  (cd "~/")
+  ;; ============ Latexmk setup ==============                                        
+  (defun run-latexmk ()
+    (interactive)
+    (let ((TeX-save-query nil)
+          (TeX-process-asynchronous nil)
+          (master-file (TeX-master-file)))
+      (TeX-save-document "")
+      (TeX-run-TeX "latexmk"
+                   (TeX-command-expand "latexmk -pdf %s" 'TeX-master-file)
+                   master-file))
+    (if (plist-get TeX-error-report-switches (intern master-file))
+        (TeX-next-error t)
+      (progn
+        (demolish-tex-help)
+          (minibuffer-message "latexmk: done."))))
   
-  ;; custom variables kludge. Why can't I get these to work via setq?
-  (custom-set-variables
-  ;; custom-set-variables was added by Custom.
-  ;; If you edit it by hand, you could mess it up, so be careful.
-  ;; Your init file should contain only one such instance.
-  ;; If there is more than one, they won't work right.
-  '(LaTeX-XeTeX-command "xelatex -synctex=1")
-  '(TeX-engine (quote xetex))
-  
-  ;; '(TeX-view-program-list (quote (("Skim" "/Applications/Skim.app/Contents/SharedSupport/displayline %n %o %b"))))
-  ;; '(TeX-view-program-selection (quote (((output-dvi style-pstricks) "dvips and gv") (output-dvi "xdvi") (output-pdf "Skim") (output-html "xdg-open"))))
-  '(show-paren-mode t)
-  '(blink-cursor-mode nil)
-  '(text-mode-hook (quote (text-mode-hook-identify)))
-  )
-  ;; make latexmk available via C-c C-c
-  ;; Note: SyncTeX is setup via ~/.latexmkrc (see below)
   (add-hook 'LaTeX-mode-hook (lambda ()
-    (push
-     '("latexmk" "latexmk -pdf %O %S" TeX-run-TeX nil t
-       :help "Run latexmk on file")
-     TeX-command-list)))
+                               (push
+                                '("Latexmk" "latexmk -pdf %s" TeX-run-TeX nil t
+                                  :help "Run Latexmk on file")
+                                TeX-command-list)))
+  
   
   (add-hook 'TeX-mode-hook '(lambda () (setq TeX-command-default "latexmk")))
-    
+      
   ;; use Skim as default pdf viewer
   ;; Skim's displayline is used for forward search (from .tex to .pdf)
   ;; option -b highlights the current line; option -g opens Skim in the background  
   (setq TeX-view-program-selection '((output-pdf "PDF Viewer")))
   (setq TeX-view-program-list
         '(("PDF Viewer" "/Applications/Skim.app/Contents/SharedSupport/displayline -b -g %n %o %b")))
-    
+  
   ;; not needed since happens in init.el
   ;; (server-start); start emacs in server mode so that skim can talk to it
 #+end_src
 
 #+RESULTS:
-
-   
-   
-   
-   
-   
-   
+| PDF Viewer | /Applications/Skim.app/Contents/SharedSupport/displayline -b -g %n %o %b |
 
 #+source: message-line
 #+begin_src emacs-lisp
