@@ -45,7 +45,7 @@ The following packages will be downloaded and installed.
                                 'yaml-mode
                                 'yasnippet
                                 'zenburn-theme
-                                'auctex
+                                ;; use git repo in /src instead 'auctex
                                 ;; 'ess
                                 ;; 'r-autoyas                                                              
                                 )

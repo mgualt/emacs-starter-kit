@@ -6,6 +6,18 @@
 ;; This is the first thing to get loaded.
 ;;
 
+(defun arrange-frame (w h x y &optional nosplit)
+  "Set the width, height, and x/y position of the current frame with split unless you say"
+  (let ((frame (selected-frame)))
+    (delete-other-windows)
+    (set-frame-position frame x y)
+    (set-frame-size frame w h)
+    (if (not nosplit)
+        (split-window-horizontally))))
+
+(arrange-frame 90 64 0 0 1)
+
+
 ;; setq dotfiles-dir (file-name-directory (or (buffer-file-name) load-file-name)))
 (setq dotfiles-dir (file-name-directory (or load-file-name (buffer-file-name))))
 (add-to-list 'load-path dotfiles-dir)
@@ -17,6 +29,7 @@
                                  "org" (expand-file-name
                                         "src" dotfiles-dir))))
 (add-to-list 'load-path "~/.emacs.d/src/org-mode/lisp")
+(add-to-list 'load-path "~/.emacs.d/src/auctex")
 ;; Common Lisp compatability
 (require 'cl-lib)
 
@@ -27,7 +40,7 @@
       (setq load-path (cons my-lisp-dir load-path))
       (normal-top-level-add-subdirs-to-load-path)))
 
- (server-start); start emacs in server mode
+(server-start); start emacs in server mode
 
 
 ;; Font-face setup. Check the availability of a some default fonts, in

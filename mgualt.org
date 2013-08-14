@@ -57,7 +57,7 @@ here adjust the height of some headings in Org and LaTeX mode, as well
 as turning off the sans-serif heading style that AucTeX defaults to.
 
 #+srcname: local-settings
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (add-hook 'latex-mode-hook 
             (lambda ()
               (set-face-attribute 'font-latex-sectioning-5-face nil :inherit nil :foreground "#b58900")
@@ -148,7 +148,7 @@ For use with Yamamoto Mitsuharu's Carbon-patched Emacs. (This is
 *** Frame position
 Set the position of the frame and define function arrange-frame  
 #+srcname: arrange-frame
-#+begin_src emacs-lisp 
+#+begin_src emacs-lisp :tangle no
 (defun arrange-frame (w h x y &optional nosplit)
   "Set the width, height, and x/y position of the current frame with split unless you say"
   (let ((frame (selected-frame)))
@@ -158,7 +158,7 @@ Set the position of the frame and define function arrange-frame
     (if (not nosplit)
         (split-window-horizontally))))
 
-(arrange-frame 90 60 200 100 1)
+(arrange-frame 90 64 0 0 1)
 #+end_src
 
 *** Dired-x
@@ -594,15 +594,21 @@ Sometimes useful for getting help on R or Emacs.
 #+end_src
 
 
-** Initial Buffer
+** Initial Buffer Dired setup
 Make the initial buffer be the main directory for all my projects.
 
 #+srcname: initial-buffer-choice
 #+begin_src emacs-lisp 
-    ;;(require 'dired-details)
-    ;;(setq-default dired-details-hidden-string "- ")
-    ;;(dired-details-install)
-  (setq dired-listing-switches "-gato")
+  ;;(require 'dired-details)
+  ;;(setq-default dired-details-hidden-string "- ")
+  ;;(dired-details-install)
+  ;; Load Dired X when Dired is loaded.
+  ;; (require 'dired-x)
+  ;; Enable toggling of uninteresting files.
+  ;; (setq-default dired-omit-files-p t) ; this is buffer-local variable
+  ;; (add-hook 'dired-mode-hook (lambda () (dired-omit-mode)))
+  ;; (add-to-list 'dired-omit-extensions ".DS_Store")
+  (setq dired-listing-switches "-gto")
   (setq initial-buffer-choice "~/Dropbox")
 #+end_src
 
@@ -651,32 +657,43 @@ Some last tweaks.
     )
     ;; make latexmk available via C-c C-c
     ;; Note: SyncTeX is setup via ~/.latexmkrc (see below)
-  
-  
+    ;; For SyncTeX to work with Skim, the full path to emacsclient must be in Skim
   
   ;; ============ Latexmk setup ==============                                        
+  (defun demolish-tex-help ()
+    (interactive)
+    (if (get-buffer "*TeX Help*") ;; Tests if the buffer exists
+      (progn ;; Do the following commands in sequence
+        (if (get-buffer-window (get-buffer "*TeX Help*")) ;; Tests if the window exists
+            (delete-window (get-buffer-window (get-buffer "*TeX Help*")))
+          ) ;; That should close the window
+        (kill-buffer "*TeX Help*") ;; This should kill the buffer
+        )
+      )
+    )
+  
+  
   (defun run-latexmk ()
     (interactive)
     (let ((TeX-save-query nil)
           (TeX-process-asynchronous nil)
           (master-file (TeX-master-file)))
-      (TeX-save-document "")
-      (TeX-run-TeX "latexmk"
+      (TeX-save-document "") ;; this works
+      (TeX-run-TeX "latexmk" ;; this command does work. 
                    (TeX-command-expand "latexmk -pdf %s" 'TeX-master-file)
                    master-file))
-    (if (plist-get TeX-error-report-switches (intern master-file))
-        (TeX-next-error t)
-      (progn
-        (demolish-tex-help)
-          (minibuffer-message "latexmk: done."))))
+      (if (plist-get TeX-error-report-switches (intern master-file)))
+          (TeX-next-error t)
+        (progn
+          (demolish-tex-help)
+            (minibuffer-message "latexmk: done.")))
   
   (add-hook 'LaTeX-mode-hook (lambda ()
                                (push
-                                '("Latexmk" "latexmk -pdf %s" TeX-run-TeX nil t
+                                '("latexmk" "latexmk -pdf %s" TeX-run-TeX nil t
                                   :help "Run Latexmk on file")
                                 TeX-command-list)))
-  
-  
+    
   (add-hook 'TeX-mode-hook '(lambda () (setq TeX-command-default "latexmk")))
       
   ;; use Skim as default pdf viewer
