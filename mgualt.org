@@ -116,17 +116,20 @@ Fullscreen toggle using maxframe.el.
 #+end_src
 
 **** Option 4
-For use with Yamamoto Mitsuharu's Carbon-patched Emacs. (This is
-    what I use, but it requires you compile a custom version of Emacs provided by Mitsuharu.)
+    For use with Yamamoto Mitsuharu's Carbon-patched Emacs. (This is
+    what I use, but it requires you compile a custom version of Emacs
+    provided by Mitsuharu.)
 
 #+source: fullscreen-4
 #+begin_src emacs-lisp 
-    (defun fullscreen (&optional f)
-      (interactive)
-      (set-frame-parameter f 'fullscreen
-                           (if (frame-parameter f 'fullscreen) nil 'fullboth)))
-    (global-set-key (kbd "C-c f") 'fullscreen)
-    (add-hook 'after-make-frame-functions 'fullscreen)
+  (defun fullscreen (&optional
+                     f) (interactive) (set-frame-parameter f
+                     'fullscreen (if (frame-parameter f
+                     'fullscreen) nil
+                     'fullboth))) (global-set-key (kbd "C-c f")
+                     'fullscreen)
+  ;; no need to fulscreen every new frame
+  ;;(add-hook 'after-make-frame-functions 'fullscreen)
 #+end_src
 
 *** Mac Key mode
@@ -652,7 +655,7 @@ Some last tweaks.
     ;; '(TeX-view-program-list (quote (("Skim" "/Applications/Skim.app/Contents/SharedSupport/displayline %n %o %b"))))
     ;; '(TeX-view-program-selection (quote (((output-dvi style-pstricks) "dvips and gv") (output-dvi "xdvi") (output-pdf "Skim") (output-html "xdg-open"))))
     '(show-paren-mode t)
-    '(blink-cursor-mode nil)
+    '(blink-cursor-mode t)
     '(text-mode-hook (quote (text-mode-hook-identify)))
     )
     ;; make latexmk available via C-c C-c
