@@ -34,7 +34,7 @@ Markdown and Pandoc, as well as spellchecking and line-wrapping.
     papers. Plus a function for removing any hard-returns in a
     document. 
 #+srcname: line-modes
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (global-visual-line-mode t)
   ;;; prefer auto-fill to visual line wrap in ESS mode
   (add-hook 'ess-mode-hook 'turn-on-auto-fill)
@@ -110,10 +110,13 @@ Markdown and Pandoc, as well as spellchecking and line-wrapping.
 ** Smartparens Mode
    Smart autopairing of quotes and parentheses. 
 #+srcname: smartparens
-#+begin_src emacs-lisp 
+#+begin_src emacs-lisp :tangle no
   (smartparens-global-mode 1)
   (require 'smartparens-config)
 #+end_src
+
+#+RESULTS:
+: smartparens-config
 
 ** Markdown 
 Markdown mode support. 

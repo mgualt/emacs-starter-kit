@@ -291,6 +291,8 @@ Following [[http://www.math.ntnu.no/~stacey/HowDidIDoThat/LaTeX/versioning.html]
   (add-hook 'tex-mode-hook '(lambda () (longlines-mode 1)))
 #+end_src
 
+#+RESULTS:
+
 *** Cosmetics
 Stop Auctex from using different fonts for the sections and subscripts.
 
@@ -619,16 +621,31 @@ Make the initial buffer be the main directory for all my projects.
 : ~/Dropbox
 
 
+** Deft mode [[http://jblevins.org/projects/deft/][Deft project]]
+#+srcname: final-custom
+#+begin_src emacs-lisp
+  (require 'deft)
+  (setq deft-extension "org")
+  (setq deft-directory "~/Dropbox/Research/Notes/deft/")
+  (setq deft-text-mode 'org-mode)
+  (setq deft-use-filename-as-title t)
+  (global-set-key [f6] 'deft)
+#+end_src
+
+#+RESULTS:
+: deft
+
 ** Final Custom elements
 Some last tweaks. 
 
 #+srcname: final-custom
 #+begin_src emacs-lisp
+    (visual-line-mode 0)
     ;; Line-spacing tweak (Optimized for PragmataPro)
     (setq-default line-spacing 2)
     (minimal-mode 1)
     ;; scroll one line at a time (less "jumpy" than defaults)
-      (setq mouse-wheel-scroll-amount '(1 ((shift) . 1))) ;; one line at a time
+      (setq mouse-wheel-scroll-amount '(1 ((shift) . 0.2))) ;; one line at a time
       (setq mouse-wheel-progressive-speed nil) ;; don't accelerate scrolling
       (setq mouse-wheel-follow-mouse 't) ;; scroll window under mouse
       (setq scroll-step 1) ;; keyboard scroll one line at a time
@@ -696,7 +713,7 @@ Some last tweaks.
                                 '("latexmk" "latexmk -pdf %s" TeX-run-TeX nil t
                                   :help "Run Latexmk on file")
                                 TeX-command-list)))
-    
+  
   (add-hook 'TeX-mode-hook '(lambda () (setq TeX-command-default "latexmk")))
       
   ;; use Skim as default pdf viewer
