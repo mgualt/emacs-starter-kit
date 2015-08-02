@@ -14,7 +14,7 @@ This is part of the [[file:starter-kit.org][Emacs Starter Kit]].
 
 *** Load Preview LaTeX
 #+begin_src emacs-lisp 
-  (load "preview.el" nil t t)
+  (load "preview-latex.el" nil t t)
 #+end_src
 
 *** Prettify Math in Buffers

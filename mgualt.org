@@ -635,11 +635,21 @@ Make the initial buffer be the main directory for all my projects.
 #+RESULTS:
 : deft
 
+
+** Colour Theme
+
+#+srcname: Colour
+#+begin_src emacs-lisp
+  (load-theme 'mgualt-solarized-dark t)
+#+end_src
+
+
 ** Final Custom elements
 Some last tweaks. 
 
 #+srcname: final-custom
 #+begin_src emacs-lisp
+    (setq-default fill-column 70)
     (visual-line-mode 0)
     ;; Line-spacing tweak (Optimized for PragmataPro)
     (setq-default line-spacing 2)
